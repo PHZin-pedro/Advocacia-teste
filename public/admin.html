@@ -11,11 +11,9 @@
   <div id="app-loader">
     <div class="loader-emblem">⚖</div>
     <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
-    <div class="loader-text">Sincronizando painel jurídico administrativo...</div>
   </div>
 
   <div class="app-shell">
-    <!-- SIDEBAR DO ADVOGADO -->
     <aside class="sidebar">
       <div>
         <a href="/index.html" class="brand">
@@ -28,359 +26,322 @@
 
         <nav class="sidebar-nav">
           <button class="sidebar-btn active" data-tab="chat">
-            <span class="label-wrap">💬 Chat & PDFs Clientes</span>
+            <span>💬 Chat & PDFs</span>
             <span id="badge-unread-chat" class="badge badge-gold">0</span>
           </button>
-          <button class="sidebar-btn" data-tab="agenda">
-            <span class="label-wrap">📅 Calendário & Horários</span>
-          </button>
-          <button class="sidebar-btn" data-tab="processos">
-            <span class="label-wrap">⚖️ Casos em Aberto</span>
-          </button>
-          <button class="sidebar-btn" data-tab="documentos">
-            <span class="label-wrap">📁 Todos os Documentos</span>
-          </button>
-          <button class="sidebar-btn" data-tab="config">
-            <span class="label-wrap">⚙️ Dados do Escritório</span>
-          </button>
+          <button class="sidebar-btn" data-tab="agenda">📅 Calendário & Horários</button>
+          <button class="sidebar-btn" data-tab="processos">⚖️ Casos em Aberto</button>
+          <button class="sidebar-btn" data-tab="documentos">📁 Documentos</button>
+          <button class="sidebar-btn" data-tab="avaliacoes">⭐ Avaliações</button>
+          <button class="sidebar-btn" data-tab="perfil">👤 Meu Perfil & Chave</button>
         </nav>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <div style="padding: 12px; border-radius: 10px; background: var(--bg-elevated); font-size: 0.82rem;">
-          <strong id="admin-sidebar-name" style="display: block;">Advogado Admin</strong>
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px;">
+        <div style="padding: 10px 12px; border-radius: 10px; background: var(--bg-elevated); font-size: 0.8rem;">
+          <strong id="admin-sidebar-name" style="display: block;">Advogado</strong>
           <span id="admin-sidebar-oab" style="color: var(--gold-500); font-weight: 700;"></span>
         </div>
         <div style="display: flex; gap: 8px;">
-          <button class="icon-btn" data-theme-toggle onclick="AureumStore.toggleTheme()">🌙</button>
+          <button class="icon-btn" data-theme-toggle data-theme-label onclick="AureumStore.toggleTheme()">🌙 Modo Escuro</button>
           <button class="btn btn-outline btn-sm" style="flex: 1;" onclick="AureumStore.logout()">Sair</button>
         </div>
       </div>
     </aside>
 
-    <!-- ÁREA PRINCIPAL DO ADVOGADO -->
     <main class="main-workspace">
       <div class="topbar">
         <div>
-          <h1 style="font-family: var(--font-serif); font-size: 1.95rem;">Central de Gestão Jurídica</h1>
-          <p style="color: var(--text-secondary); font-size: 0.88rem;">
-            Atenda clientes via chat estilo WhatsApp, revise PDFs, gerencie sua agenda e controle processos abertos e arquivados.
+          <h1 style="font-family: var(--font-serif); font-size: 1.85rem;">Central do Advogado</h1>
+          <p style="color: var(--text-secondary); font-size: 0.86rem;">
+            Gerencie conversas, PDFs, agenda, avaliações e seu perfil público na página inicial.
           </p>
         </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <span id="db-connection-badge" class="badge badge-gold">Modo Local / Pronto p/ Supabase</span>
+        <div class="topbar-actions">
+          <button class="icon-btn" data-theme-toggle data-theme-label onclick="AureumStore.toggleTheme()">🌙 Modo Escuro</button>
+          <span id="db-connection-badge" class="badge badge-gold">Modo Local</span>
           <a href="/index.html" class="btn btn-outline btn-sm">Ver Site</a>
         </div>
       </div>
 
-      <!-- KPIs RÁPIDOS -->
-      <div class="grid-4" style="margin-bottom: 24px;">
+      <!-- KPIs -->
+      <div class="grid-4" style="margin-bottom: 22px;">
         <div class="card">
-          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">CASOS EM ABERTO</div>
-          <strong id="kpi-open-cases" style="font-family: var(--font-serif); font-size: 2.1rem; color: var(--gold-500);">0</strong>
+          <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700;">CASOS EM ABERTO</div>
+          <strong id="kpi-open-cases" style="font-family: var(--font-serif); font-size: 2rem; color: var(--gold-500);">0</strong>
         </div>
         <div class="card">
-          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">CASOS ARQUIVADOS</div>
-          <strong id="kpi-archived-cases" style="font-family: var(--font-serif); font-size: 2.1rem;">0</strong>
+          <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700;">ARQUIVADOS</div>
+          <strong id="kpi-archived-cases" style="font-family: var(--font-serif); font-size: 2rem;">0</strong>
         </div>
         <div class="card">
-          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">DOCUMENTOS / PDFS</div>
-          <strong id="kpi-docs-count" style="font-family: var(--font-serif); font-size: 2.1rem;">0</strong>
+          <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700;">PDFS / DOCUMENTOS</div>
+          <strong id="kpi-docs-count" style="font-family: var(--font-serif); font-size: 2rem;">0</strong>
         </div>
         <div class="card">
-          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">COMPROMISSOS AGENDA</div>
-          <strong id="kpi-apts-count" style="font-family: var(--font-serif); font-size: 2.1rem; color: var(--success);">0</strong>
+          <div style="font-size: 0.74rem; color: var(--text-muted); font-weight: 700;">NOTA MÉDIA</div>
+          <strong id="kpi-rating-avg" style="font-family: var(--font-serif); font-size: 2rem; color: var(--success);">5.0 ★</strong>
         </div>
       </div>
 
-      <!-- =====================================================================
-           ABA 1: CHAT DE DOCUMENTOS ESTILO WHATSAPP (NOME, EMAIL, PDFs E RESPOSTA)
-           ===================================================================== -->
+      <!-- ABA 1: CHAT ESTILO WHATSAPP COM FILTRO POR ADVOGADO -->
       <section id="tab-chat" class="tab-panel active">
         <div class="whatsapp-layout">
-          <!-- LISTA DE CLIENTES / CONVERSAS -->
           <div class="chat-contacts">
             <div class="chat-contacts-header">
-              <strong style="display: block; margin-bottom: 8px;">Conversas & Envios de PDF</strong>
-              <input type="text" id="chat-search-client" class="form-control" placeholder="Buscar por nome ou e-mail..." />
+              <strong style="display: block; margin-bottom: 8px;">Conversas & PDFs</strong>
+              <input type="text" id="chat-search-client" class="form-control" placeholder="Buscar cliente ou e-mail..." style="margin-bottom: 8px;" />
+              <select id="chat-filter-lawyer" class="form-control" style="min-height: 38px; padding: 6px 10px; font-size: 0.84rem;">
+                <option value="all">Todas as Conversas do Escritório</option>
+                <option value="mine">Somente Direcionadas a Mim</option>
+              </select>
             </div>
             <div id="admin-chat-contact-list" class="chat-contact-list"></div>
           </div>
 
-          <!-- CONVERSA ATIVA + DADOS DO CLIENTE + RESPOSTA -->
           <div class="chat-thread">
             <div class="chat-thread-header">
               <div>
-                <strong id="active-chat-client-name" style="font-size: 1.02rem;">Selecione um cliente</strong>
-                <div id="active-chat-client-meta" style="font-size: 0.8rem; color: var(--text-secondary);">
-                  E-mail e telefone aparecerão aqui
-                </div>
+                <strong id="active-chat-client-name" style="font-size: 1rem;">Selecione um cliente</strong>
+                <div id="active-chat-client-meta" style="font-size: 0.78rem; color: var(--text-secondary);"></div>
               </div>
-              <div id="active-chat-actions"></div>
             </div>
-
             <div id="admin-chat-messages" class="chat-messages"></div>
-
             <form id="admin-chat-form" class="chat-composer">
               <div id="admin-file-preview" style="display: none; font-size: 0.8rem; color: var(--gold-600); font-weight: 600;"></div>
               <div class="chat-composer-row">
-                <label class="icon-btn" title="Enviar PDF ou Petição ao Cliente" style="cursor: pointer;">
+                <label class="icon-btn" title="Enviar PDF ao Cliente" style="cursor: pointer;">
                   📎
                   <input type="file" id="admin-chat-file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display: none;" />
                 </label>
-                <input type="text" id="admin-chat-input" class="form-control" placeholder="Responda ao cliente diretamente por aqui..." />
-                <button type="submit" class="btn btn-gold">Responder ➤</button>
+                <input type="text" id="admin-chat-input" class="form-control" placeholder="Responda ao cliente por aqui..." />
+                <button type="submit" class="btn btn-gold">Responder</button>
               </div>
             </form>
           </div>
         </div>
       </section>
 
-      <!-- =====================================================================
-           ABA 2: CALENDÁRIO DO ADVOGADO + HORÁRIOS DE FUNCIONAMENTO
-           ===================================================================== -->
+      <!-- ABA 2: CALENDÁRIO & HORÁRIOS DE FUNCIONAMENTO -->
       <section id="tab-agenda" class="tab-panel">
-        <div class="calendar-wrapper" style="margin-bottom: 24px;">
-          <!-- CALENDÁRIO MENSAL INTERATIVO -->
+        <div class="calendar-wrapper" style="margin-bottom: 22px;">
           <div class="card">
             <div class="calendar-header">
-              <button type="button" class="btn btn-outline btn-sm" id="cal-prev-month">← Mês Anterior</button>
-              <h3 id="cal-month-label" style="font-family: var(--font-serif); font-size: 1.5rem; text-transform: capitalize;"></h3>
-              <button type="button" class="btn btn-outline btn-sm" id="cal-next-month">Próximo Mês →</button>
+              <button type="button" class="btn btn-outline btn-sm" id="cal-prev-month">← Anterior</button>
+              <h3 id="cal-month-label" style="font-family: var(--font-serif); font-size: 1.4rem; text-transform: capitalize;"></h3>
+              <button type="button" class="btn btn-outline btn-sm" id="cal-next-month">Próximo →</button>
             </div>
             <div class="calendar-weekdays">
               <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
             </div>
             <div id="admin-calendar-grid" class="calendar-grid" style="margin-top: 8px;"></div>
-            <div style="margin-top: 12px; font-size: 0.78rem; color: var(--text-muted); display: flex; gap: 14px;">
-              <span>🟡 Dias com ponto dourado possuem audiências ou reuniões marcadas. Clique no dia para ver detalhes.</span>
-            </div>
           </div>
 
-          <!-- DETALHES DO DIA SELECIONADO + NOVO COMPROMISSO -->
           <div class="card">
             <h3 style="margin-bottom: 4px;">Compromissos do Dia</h3>
-            <p id="selected-date-label" style="color: var(--gold-500); font-weight: 700; font-size: 0.88rem; margin-bottom: 14px;"></p>
+            <p id="selected-date-label" style="color: var(--gold-500); font-weight: 700; font-size: 0.86rem; margin-bottom: 12px;"></p>
+            <div id="day-appointments-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; max-height: 220px; overflow-y: auto;"></div>
 
-            <div id="day-appointments-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; max-height: 230px; overflow-y: auto;"></div>
-
-            <div style="padding-top: 16px; border-top: 1px solid var(--border-subtle);">
-              <strong style="display: block; margin-bottom: 10px; font-size: 0.9rem;">+ Agendar Audiência / Reunião Manual</strong>
-              <form id="admin-new-apt-form">
-                <div class="form-group">
-                  <input type="text" id="aapt-client" class="form-control" placeholder="Nome do Cliente ou Parte *" required />
-                </div>
-                <div class="grid-2">
-                  <div class="form-group">
-                    <input type="date" id="aapt-date" class="form-control" required />
-                  </div>
-                  <div class="form-group">
-                    <input type="time" id="aapt-time" class="form-control" value="10:00" required />
-                  </div>
-                </div>
-                <div class="grid-2">
-                  <div class="form-group">
-                    <select id="aapt-type" class="form-control">
-                      <option value="Audiência">Audiência</option>
-                      <option value="Reunião Cliente">Reunião Cliente</option>
-                      <option value="Prazo Processual">Prazo Processual</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <select id="aapt-modality" class="form-control">
-                      <option value="Fórum / Tribunal">Fórum / Tribunal</option>
-                      <option value="Videoconferência">Videoconferência</option>
-                      <option value="Presencial">Presencial</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <input type="text" id="aapt-subject" class="form-control" placeholder="Assunto / Vara / Link *" required />
-                </div>
-                <button type="submit" class="btn btn-gold btn-sm" style="width: 100%;">Salvar na Agenda</button>
-              </form>
-            </div>
+            <form id="admin-new-apt-form" style="padding-top: 14px; border-top: 1px solid var(--border-subtle);">
+              <strong style="display: block; margin-bottom: 8px; font-size: 0.88rem;">+ Marcar Audiência / Reunião</strong>
+              <div class="form-group"><input type="text" id="aapt-client" class="form-control" placeholder="Cliente / Parte *" required /></div>
+              <div class="grid-2">
+                <div class="form-group"><input type="date" id="aapt-date" class="form-control" required /></div>
+                <div class="form-group"><input type="time" id="aapt-time" class="form-control" value="10:00" required /></div>
+              </div>
+              <div class="form-group"><input type="text" id="aapt-subject" class="form-control" placeholder="Assunto / Vara *" required /></div>
+              <button type="submit" class="btn btn-gold btn-sm" style="width: 100%;">Salvar na Agenda</button>
+            </form>
           </div>
         </div>
 
-        <!-- CONFIGURADOR DE HORÁRIOS DE FUNCIONAMENTO DO ADVOGADO -->
         <div class="card" style="border-color: var(--border-color);">
-          <h3 style="margin-bottom: 6px;">🕒 Horários de Funcionamento & Disponibilidade para Clientes</h3>
-          <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 18px;">
-            Defina abaixo os dias e horários em que o escritório atende. O formulário de agendamento dos clientes só exibirá horários livres dentro desta janela.
-          </p>
-
+          <h3 style="margin-bottom: 12px;">🕒 Horários de Funcionamento do Escritório</h3>
           <form id="business-hours-form">
             <div class="grid-4">
-              <div class="form-group">
-                <label class="form-label">Início do Expediente</label>
-                <input type="time" id="bh-open" class="form-control" value="08:00" required />
-              </div>
-              <div class="form-group">
-                <label class="form-label">Fim do Expediente</label>
-                <input type="time" id="bh-close" class="form-control" value="18:00" required />
-              </div>
-              <div class="form-group">
-                <label class="form-label">Início Almoço / Pausa</label>
-                <input type="time" id="bh-lunch-start" class="form-control" value="12:00" />
-              </div>
-              <div class="form-group">
-                <label class="form-label">Fim Almoço / Pausa</label>
-                <input type="time" id="bh-lunch-end" class="form-control" value="13:30" />
-              </div>
+              <div class="form-group"><label class="form-label">Abertura</label><input type="time" id="bh-open" class="form-control" value="08:00" required /></div>
+              <div class="form-group"><label class="form-label">Fechamento</label><input type="time" id="bh-close" class="form-control" value="18:00" required /></div>
+              <div class="form-group"><label class="form-label">Início Almoço</label><input type="time" id="bh-lunch-start" class="form-control" value="12:00" /></div>
+              <div class="form-group"><label class="form-label">Fim Almoço</label><input type="time" id="bh-lunch-end" class="form-control" value="13:30" /></div>
             </div>
-
-            <div class="grid-2" style="align-items: center;">
+            <div class="grid-2">
               <div class="form-group">
-                <label class="form-label">Dias da Semana de Atendimento</label>
-                <div style="display: flex; flex-wrap: wrap; gap: 12px; padding-top: 4px;">
+                <label class="form-label">Dias de Atendimento</label>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                   <label><input type="checkbox" name="bh-day" value="1" checked /> Seg</label>
                   <label><input type="checkbox" name="bh-day" value="2" checked /> Ter</label>
                   <label><input type="checkbox" name="bh-day" value="3" checked /> Qua</label>
                   <label><input type="checkbox" name="bh-day" value="4" checked /> Qui</label>
                   <label><input type="checkbox" name="bh-day" value="5" checked /> Sex</label>
                   <label><input type="checkbox" name="bh-day" value="6" /> Sáb</label>
-                  <label><input type="checkbox" name="bh-day" value="0" /> Dom</label>
                 </div>
               </div>
-
               <div class="form-group">
-                <label class="form-label">Duração de Cada Reunião</label>
+                <label class="form-label">Duração por Consulta</label>
                 <select id="bh-slot" class="form-control">
                   <option value="30">30 minutos</option>
-                  <option value="45">45 minutos</option>
-                  <option value="60" selected>1 hora (60 min)</option>
-                  <option value="90">1h 30min</option>
+                  <option value="60" selected>60 minutos</option>
                 </select>
               </div>
             </div>
-
-            <button type="submit" class="btn btn-gold">💾 Salvar Horários de Funcionamento</button>
+            <button type="submit" class="btn btn-gold">💾 Salvar Horários</button>
           </form>
         </div>
       </section>
 
-      <!-- =====================================================================
-           ABA 3: CASOS EM ABERTO & ARQUIVADOS
-           ===================================================================== -->
+      <!-- ABA 3: CASOS EM ABERTO & ARQUIVADOS -->
       <section id="tab-processos" class="tab-panel">
-        <div class="card" style="margin-bottom: 22px;">
-          <h3 style="margin-bottom: 14px;">+ Cadastrar Novo Processo / Caso em Aberto</h3>
+        <div class="card" style="margin-bottom: 20px;">
+          <h3 style="margin-bottom: 12px;">+ Cadastrar Novo Caso em Aberto</h3>
           <form id="admin-new-case-form">
             <div class="grid-3">
-              <div class="form-group">
-                <label class="form-label">Número CNJ *</label>
-                <input type="text" id="ncase-cnj" class="form-control" placeholder="0000000-00.2026.8.26.0100" required />
-              </div>
-              <div class="form-group">
-                <label class="form-label">Título da Ação *</label>
-                <input type="text" id="ncase-title" class="form-control" placeholder="Ex: Ação de Cobrança Contratual" required />
-              </div>
-              <div class="form-group">
-                <label class="form-label">Área Jurídica *</label>
-                <input type="text" id="ncase-area" class="form-control" placeholder="Ex: Direito Civil" required />
-              </div>
+              <div class="form-group"><label class="form-label">Número CNJ *</label><input type="text" id="ncase-cnj" class="form-control" required /></div>
+              <div class="form-group"><label class="form-label">Título *</label><input type="text" id="ncase-title" class="form-control" required /></div>
+              <div class="form-group"><label class="form-label">Área *</label><input type="text" id="ncase-area" class="form-control" required /></div>
             </div>
             <div class="grid-3">
-              <div class="form-group">
-                <label class="form-label">Nome do Cliente *</label>
-                <input type="text" id="ncase-client-name" class="form-control" required />
-              </div>
-              <div class="form-group">
-                <label class="form-label">E-mail do Cliente *</label>
-                <input type="email" id="ncase-client-email" class="form-control" required />
-              </div>
-              <div class="form-group">
-                <label class="form-label">Vara / Comarca *</label>
-                <input type="text" id="ncase-court" class="form-control" placeholder="Ex: 5ª Vara Cível - TJSP" required />
-              </div>
+              <div class="form-group"><label class="form-label">Cliente *</label><input type="text" id="ncase-client-name" class="form-control" required /></div>
+              <div class="form-group"><label class="form-label">E-mail Cliente *</label><input type="email" id="ncase-client-email" class="form-control" required /></div>
+              <div class="form-group"><label class="form-label">Vara / Tribunal *</label><input type="text" id="ncase-court" class="form-control" required /></div>
             </div>
-            <button type="submit" class="btn btn-gold">Cadastrar Processo</button>
+            <button type="submit" class="btn btn-gold">Cadastrar Caso</button>
           </form>
         </div>
 
-        <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+        <div style="display: flex; gap: 10px; margin-bottom: 14px;">
           <button type="button" class="btn btn-gold btn-sm" id="filter-cases-open">Casos em Aberto</button>
           <button type="button" class="btn btn-outline btn-sm" id="filter-cases-archived">Casos Arquivados</button>
         </div>
-
-        <div id="admin-cases-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
+        <div id="admin-cases-container" style="display: flex; flex-direction: column; gap: 14px;"></div>
       </section>
 
-      <!-- =====================================================================
-           ABA 4: TODOS OS DOCUMENTOS & PDFS ENVIADOS PELOS CLIENTES
-           ===================================================================== -->
+      <!-- ABA 4: DOCUMENTOS -->
       <section id="tab-documentos" class="tab-panel">
         <div class="card table-wrap">
-          <h3 style="margin-bottom: 14px;">Central de Documentos & PDFs Recebidos</h3>
           <table>
             <thead>
-              <tr>
-                <th>Cliente (Nome & E-mail)</th>
-                <th>Documento</th>
-                <th>Arquivo</th>
-                <th>Data</th>
-                <th>Status</th>
-                <th>Ações</th>
-              </tr>
+              <tr><th>Cliente</th><th>Documento</th><th>Arquivo</th><th>Data</th><th>Status</th><th>Ação</th></tr>
             </thead>
             <tbody id="admin-docs-tbody"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- =====================================================================
-           ABA 5: CONFIGURAÇÕES WHITE-LABEL DO ESCRITÓRIO
-           ===================================================================== -->
-      <section id="tab-config" class="tab-panel">
-        <div class="card" style="max-width: 760px;">
-          <h3 style="margin-bottom: 6px;">Personalizar Informações do Advogado & Escritório</h3>
+      <!-- ABA 5: GERENCIAR AVALIAÇÕES DOS CLIENTES -->
+      <section id="tab-avaliacoes" class="tab-panel">
+        <div class="card">
+          <h3 style="margin-bottom: 6px;">⭐ Avaliações & Depoimentos dos Clientes</h3>
           <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 18px;">
-            Altere o nome do escritório, advogado titular, OAB e contatos exibidos na página inicial e nos portais.
+            Responda publicamente às avaliações dos clientes ou remova comentários indesejados.
           </p>
-          <form id="admin-brand-form">
-            <div class="grid-2">
-              <div class="form-group">
-                <label class="form-label">Nome Completo do Escritório</label>
-                <input type="text" id="cfg-firm-name" class="form-control" />
+          <div id="admin-reviews-list" style="display: flex; flex-direction: column; gap: 14px;"></div>
+        </div>
+      </section>
+
+      <!-- ABA 6: MEU PERFIL PÚBLICO (FOTO, NOME, OAB, DESCRIÇÃO) + CHAVE SECRETA ADMIN -->
+      <section id="tab-perfil" class="tab-panel">
+        <div style="display: flex; flex-direction: column; gap: 22px; max-width: 780px;">
+          <!-- CARD 1: PERFIL DO ADVOGADO QUE APARECE NA TELA INICIAL -->
+          <div class="card" style="border-color: var(--border-color);">
+            <span class="badge badge-gold" style="margin-bottom: 10px;">Exibido na Tela Inicial</span>
+            <h3 style="font-family: var(--font-serif); font-size: 1.75rem; margin-bottom: 6px;">Meu Perfil Profissional</h3>
+            <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 18px;">
+              Altere sua foto, nome, OAB, especialidade e descrição. Tudo atualizado aqui aparece automaticamente na página inicial para os clientes escolherem você.
+            </p>
+
+            <form id="admin-profile-form">
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 18px; margin-bottom: 18px;">
+                <div id="profile-avatar-preview-wrap"></div>
+                <div style="flex: 1; min-width: 220px;">
+                  <label class="form-label">Foto de Perfil (Upload ou Link)</label>
+                  <input type="file" id="prof-avatar-file" class="form-control" accept="image/*" style="margin-bottom: 8px;" />
+                  <input type="url" id="prof-avatar-url" class="form-control" placeholder="Ou cole a URL de uma imagem (https://...)" />
+                </div>
               </div>
-              <div class="form-group">
-                <label class="form-label">Sigla / Marca Curta</label>
-                <input type="text" id="cfg-short-name" class="form-control" />
+
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Seu Nome Completo *</label>
+                  <input type="text" id="prof-name" class="form-control" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Inscrição OAB *</label>
+                  <input type="text" id="prof-oab" class="form-control" required />
+                  <span id="prof-oab-hint" class="validation-hint"></span>
+                </div>
               </div>
-            </div>
-            <div class="grid-2">
-              <div class="form-group">
-                <label class="form-label">Nome do Advogado Titular</label>
-                <input type="text" id="cfg-lawyer-name" class="form-control" />
+
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Especialidade Principal *</label>
+                  <input type="text" id="prof-specialty" class="form-control" placeholder="Ex: Direito Civil & Empresarial" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">WhatsApp Profissional</label>
+                  <input type="text" id="prof-phone" class="form-control" />
+                </div>
               </div>
+
               <div class="form-group">
-                <label class="form-label">Número OAB</label>
-                <input type="text" id="cfg-lawyer-oab" class="form-control" />
+                <label class="form-label">Descrição / Bio Profissional (Aparece no seu cartão na tela inicial) *</label>
+                <textarea id="prof-bio" class="form-control" rows="3" required></textarea>
               </div>
-            </div>
-            <div class="grid-2">
+
+              <button type="submit" class="btn btn-gold">💾 Salvar Meu Perfil na Tela Inicial</button>
+            </form>
+          </div>
+
+          <!-- CARD 2: ALTERAR CHAVE SECRETA PARA CRIAR CONTA DE ADVOGADO + DADOS DO ESCRITÓRIO -->
+          <div class="card">
+            <span class="badge badge-danger" style="margin-bottom: 10px;">Segurança & Escritório</span>
+            <h3 style="font-family: var(--font-serif); font-size: 1.75rem; margin-bottom: 6px;">Chave Secreta de Advogados & Dados Gerais</h3>
+            <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 18px;">
+              Defina a senha mestra exigida na aba <strong>"Sou Advogado"</strong> da tela de cadastro para permitir novos advogados no painel.
+            </p>
+
+            <form id="admin-security-form">
               <div class="form-group">
-                <label class="form-label">E-mail de Contato</label>
-                <input type="email" id="cfg-lawyer-email" class="form-control" />
+                <label class="form-label">🔑 Chave Secreta para Criar Conta de Advogado *</label>
+                <input type="text" id="sec-invite-code" class="form-control" required />
               </div>
+
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Nome do Escritório</label>
+                  <input type="text" id="sec-firm-name" class="form-control" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Sigla / Marca Curta</label>
+                  <input type="text" id="sec-short-name" class="form-control" />
+                </div>
+              </div>
+
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">E-mail Institucional</label>
+                  <input type="email" id="sec-email" class="form-control" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Telefone Institucional</label>
+                  <input type="text" id="sec-phone" class="form-control" />
+                </div>
+              </div>
+
               <div class="form-group">
-                <label class="form-label">Telefone / WhatsApp</label>
-                <input type="text" id="cfg-lawyer-phone" class="form-control" />
+                <label class="form-label">Endereço do Escritório</label>
+                <input type="text" id="sec-address" class="form-control" />
               </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Endereço do Escritório</label>
-              <input type="text" id="cfg-firm-address" class="form-control" />
-            </div>
-            <button type="submit" class="btn btn-gold">💾 Aplicar Alterações no Site</button>
-          </form>
+
+              <button type="submit" class="btn btn-gold">🔐 Salvar Chave Secreta & Configurações</button>
+            </form>
+          </div>
         </div>
       </section>
     </main>
   </div>
 
   <script src="/js/config.js"></script>
+  <script src="/js/validators.js"></script>
   <script src="/js/store.js"></script>
   <script src="/js/admin.js"></script>
 </body>

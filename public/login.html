@@ -11,7 +11,6 @@
   <div id="app-loader">
     <div class="loader-emblem">⚖</div>
     <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
-    <div class="loader-text">Preparando portal de autenticação...</div>
   </div>
 
   <header class="navbar">
@@ -20,32 +19,30 @@
         <div class="brand-mark">A</div>
         <div class="brand-text">
           <strong data-brand="firmShortName">AUREUM</strong>
-          <span>Portal de Acesso Seguro</span>
+          <span>Portal de Acesso</span>
         </div>
       </a>
       <div class="nav-actions">
-        <button class="icon-btn" data-theme-toggle onclick="AureumStore.toggleTheme()">🌙</button>
-        <a href="/index.html" class="btn btn-outline btn-sm">← Voltar ao Site</a>
+        <button class="icon-btn" data-theme-toggle data-theme-label onclick="AureumStore.toggleTheme()">🌙 Modo Escuro</button>
+        <a href="/index.html" class="btn btn-outline btn-sm">← Site</a>
       </div>
     </div>
   </header>
 
-  <main class="container" style="padding: 52px 24px; max-width: 540px;">
+  <main class="container" style="padding: 40px 16px; max-width: 560px;">
     <div class="card" style="border-color: var(--border-color); box-shadow: var(--shadow-lg);">
-      <!-- ABAS DE AUTENTICAÇÃO -->
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 24px; background: var(--bg-elevated); padding: 6px; border-radius: 10px;">
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 22px; background: var(--bg-elevated); padding: 6px; border-radius: 12px;">
         <button type="button" class="btn btn-sm auth-tab-btn btn-gold" data-auth-tab="login">Entrar</button>
         <button type="button" class="btn btn-sm auth-tab-btn btn-ghost" data-auth-tab="register">Cadastrar Cliente</button>
         <button type="button" class="btn btn-sm auth-tab-btn btn-ghost" data-auth-tab="admin">Sou Advogado</button>
       </div>
 
-      <!-- FORMULÁRIO 1: LOGIN -->
+      <!-- LOGIN -->
       <form id="form-login" class="auth-panel">
-        <h2 style="font-family: var(--font-serif); font-size: 1.9rem; margin-bottom: 6px;">Acessar Plataforma</h2>
-        <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 20px;">
-          Entre com seu e-mail e senha para acessar seus processos, chat e documentos.
+        <h2 style="font-family: var(--font-serif); font-size: 1.85rem; margin-bottom: 6px;">Acessar Plataforma</h2>
+        <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 18px;">
+          Entre com seu e-mail e senha para acessar processos, chat e documentos.
         </p>
-
         <div class="form-group">
           <label class="form-label">E-mail Cadastrado</label>
           <input type="email" id="login-email" class="form-control" placeholder="seu@email.com" required />
@@ -54,35 +51,37 @@
           <label class="form-label">Senha</label>
           <input type="password" id="login-password" class="form-control" placeholder="••••••••" required />
         </div>
+        <button type="submit" class="btn btn-gold" style="width: 100%;">Entrar no Portal</button>
 
-        <button type="submit" class="btn btn-gold" style="width: 100%; padding: 12px;">Entrar no Portal</button>
-
-        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
+        <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-subtle);">
           <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 600;">
-            Acesso Rápido para Demonstração (1 Clique):
+            Acesso Rápido Demonstrativo:
           </div>
-          <div class="grid-2">
-            <button type="button" class="btn btn-outline btn-sm" onclick="quickDemoLogin('admin')">
-              ⚖️ Entrar como Advogado
-            </button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="quickDemoLogin('client')">
-              👤 Entrar como Cliente
-            </button>
+          <div class="grid-2" style="gap: 8px;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="quickDemoLogin('admin')">⚖️ Painel Advogado</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="quickDemoLogin('client')">👤 Portal Cliente</button>
           </div>
         </div>
       </form>
 
-      <!-- FORMULÁRIO 2: CADASTRO DE CLIENTE COM VERIFICAÇÃO DE CÓDIGO OTP -->
+      <!-- CADASTRO CLIENTE COM VALIDAÇÃO RIGOROSA DE CPF (11 DÍGITOS) + OTP -->
       <form id="form-register" class="auth-panel" style="display: none;">
-        <h2 style="font-family: var(--font-serif); font-size: 1.9rem; margin-bottom: 6px;">Cadastro de Cliente</h2>
+        <h2 style="font-family: var(--font-serif); font-size: 1.85rem; margin-bottom: 6px;">Cadastro de Cliente</h2>
         <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 18px;">
-          Crie sua conta gratuita para enviar documentos em PDF, acompanhar processos e falar no chat com o advogado.
+          Informe seu CPF completo (11 dígitos) e crie sua conta para enviar documentos e acompanhar processos.
         </p>
 
         <div class="form-group">
           <label class="form-label">Nome Completo *</label>
           <input type="text" id="reg-name" class="form-control" required />
         </div>
+
+        <div class="form-group">
+          <label class="form-label">CPF (Exatamente 11 dígitos) *</label>
+          <input type="text" id="reg-cpf" class="form-control" placeholder="000.000.000-00" maxlength="14" required />
+          <span id="reg-cpf-hint" class="validation-hint"></span>
+        </div>
+
         <div class="grid-2">
           <div class="form-group">
             <label class="form-label">E-mail *</label>
@@ -93,68 +92,71 @@
             <input type="text" id="reg-phone" class="form-control" placeholder="(11) 99999-0000" required />
           </div>
         </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label class="form-label">CPF ou CNPJ</label>
-            <input type="text" id="reg-cpf" class="form-control" placeholder="000.000.000-00" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Crie uma Senha *</label>
-            <input type="password" id="reg-pass" class="form-control" required />
-          </div>
+
+        <div class="form-group">
+          <label class="form-label">Crie uma Senha *</label>
+          <input type="password" id="reg-pass" class="form-control" required />
         </div>
 
         <div id="otp-box" style="display: none; padding: 14px; border-radius: 10px; background: var(--gold-soft); border: 1px solid var(--border-color); margin-bottom: 14px;">
           <label class="form-label">Código de Verificação (6 dígitos)</label>
           <input type="text" id="reg-otp-input" class="form-control" maxlength="6" placeholder="000000" />
-          <small id="otp-hint" style="display: block; margin-top: 6px; color: var(--gold-600); font-weight: 600;"></small>
+          <small id="otp-hint" style="display: block; margin-top: 6px; color: var(--gold-600); font-weight: 700;"></small>
         </div>
 
-        <button type="submit" id="reg-submit-btn" class="btn btn-gold" style="width: 100%; padding: 12px;">
-          Solicitar Código & Criar Conta
+        <button type="submit" id="reg-submit-btn" class="btn btn-gold" style="width: 100%;">
+          Verificar Dados & Criar Conta
         </button>
       </form>
 
-      <!-- FORMULÁRIO 3: CADASTRO DE ADVOGADO ADMINISTRADOR -->
+      <!-- CADASTRO ADVOGADO COM VERIFICAÇÃO OAB + CHAVE SECRETA -->
       <form id="form-admin" class="auth-panel" style="display: none;">
-        <h2 style="font-family: var(--font-serif); font-size: 1.9rem; margin-bottom: 6px;">Cadastro Advogado Admin</h2>
+        <h2 style="font-family: var(--font-serif); font-size: 1.85rem; margin-bottom: 6px;">Cadastro de Advogado</h2>
         <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 18px;">
-          Requer a Chave Secreta do Escritório configurada em <code>config.js</code> ou no Render/Vercel.
+          Validação obrigatória da inscrição OAB/UF e da Chave Secreta definida pelo escritório.
         </p>
 
         <div class="form-group">
-          <label class="form-label">Nome do Advogado *</label>
+          <label class="form-label">Nome Profissional *</label>
           <input type="text" id="adm-name" class="form-control" placeholder="Dr(a). Nome Sobrenome" required />
         </div>
+
+        <div class="form-group">
+          <label class="form-label">Inscrição OAB (UF + Número) *</label>
+          <input type="text" id="adm-oab" class="form-control" placeholder="Ex: OAB/SP 348.920" required />
+          <span id="adm-oab-hint" class="validation-hint"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Especialidade Principal *</label>
+          <input type="text" id="adm-specialty" class="form-control" placeholder="Ex: Direito Civil & Empresarial" required />
+        </div>
+
         <div class="grid-2">
-          <div class="form-group">
-            <label class="form-label">Número OAB *</label>
-            <input type="text" id="adm-oab" class="form-control" placeholder="OAB/SP 000.000" required />
-          </div>
           <div class="form-group">
             <label class="form-label">E-mail Profissional *</label>
             <input type="email" id="adm-email" class="form-control" required />
           </div>
-        </div>
-        <div class="grid-2">
           <div class="form-group">
             <label class="form-label">Senha *</label>
             <input type="password" id="adm-pass" class="form-control" required />
           </div>
-          <div class="form-group">
-            <label class="form-label">Código Secreto Admin *</label>
-            <input type="password" id="adm-code" class="form-control" placeholder="AUREUM-ADMIN-2026" required />
-          </div>
         </div>
 
-        <button type="submit" class="btn btn-gold" style="width: 100%; padding: 12px;">
-          Criar Conta Administrativa
+        <div class="form-group">
+          <label class="form-label">Chave Secreta do Escritório *</label>
+          <input type="password" id="adm-code" class="form-control" placeholder="Digite a chave secreta" required />
+        </div>
+
+        <button type="submit" class="btn btn-gold" style="width: 100%;">
+          Validar OAB & Criar Conta de Advogado
         </button>
       </form>
     </div>
   </main>
 
   <script src="/js/config.js"></script>
+  <script src="/js/validators.js"></script>
   <script src="/js/store.js"></script>
   <script src="/js/auth.js"></script>
 </body>

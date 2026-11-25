@@ -8,24 +8,12 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <!-- =========================================================================
-       █████████████████████████████████████████████████████████████████████████
-       ██  ATENÇÃO COMPRADOR / DESENVOLVEDOR:                                 ██
-       ██  PARA ALTERAR O NOME DO ADVOGADO, OAB, TELEFONE, EMAIL E ENDEREÇO   ██
-       ██  EM TODO O SITE DE UMA SÓ VEZ, EDITE O ARQUIVO:                     ██
-       ██  👉  public/js/config.js                                            ██
-       ██  OU ALTERE OS TEXTOS PADRÃO ABAIXO COM O ATRIBUTO data-brand="..."  ██
-       █████████████████████████████████████████████████████████████████████████
-       ========================================================================= -->
-
-  <!-- TELA DE CARREGAMENTO ELEGANTE (RENDER / SUPABASE) -->
   <div id="app-loader">
     <div class="loader-emblem">⚖</div>
     <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
-    <div class="loader-text">Carregando ambiente jurídico seguro...</div>
   </div>
 
-  <!-- NAVEGAÇÃO SUPERIOR -->
+  <!-- NAVBAR RESPONSIVA COM BOTÃO DE MODO ESCURO NO DESKTOP E CELULAR -->
   <header class="navbar">
     <div class="container navbar-inner">
       <a href="/index.html" class="brand">
@@ -37,14 +25,27 @@
       </a>
 
       <nav class="nav-links">
-        <a href="#sobre">O Escritório</a>
-        <a href="#areas">Áreas de Atuação</a>
+        <a href="#advogados">Advogados</a>
         <a href="#atendimento">Enviar Caso & PDF</a>
         <a href="#agendar">Agendar Consulta</a>
+        <a href="#avaliacoes">Avaliações</a>
       </nav>
 
       <div class="nav-actions">
         <button class="icon-btn" data-theme-toggle onclick="AureumStore.toggleTheme()" title="Alternar Tema">🌙</button>
+        <a href="/login.html?tab=login" class="btn btn-outline btn-sm nav-desktop-only">Entrar</a>
+        <a href="/login.html?tab=register" class="btn btn-gold btn-sm nav-desktop-only">Cadastrar</a>
+        <button class="icon-btn mobile-menu-btn" id="mobile-menu-toggle" aria-label="Menu">☰</button>
+      </div>
+    </div>
+
+    <!-- MENU MOBILE EXPANSÍVEL -->
+    <div class="mobile-drawer" id="mobile-drawer">
+      <a href="#advogados" class="drawer-link" onclick="closeMobileMenu()">⚖️ Nossa Equipe de Advogados</a>
+      <a href="#atendimento" class="drawer-link" onclick="closeMobileMenu()">💬 Explicar Caso & Enviar PDF</a>
+      <a href="#agendar" class="drawer-link" onclick="closeMobileMenu()">📅 Agendar Consulta</a>
+      <a href="#avaliacoes" class="drawer-link" onclick="closeMobileMenu()">⭐ Avaliações dos Clientes</a>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px;">
         <a href="/login.html?tab=login" class="btn btn-outline">Fazer Login</a>
         <a href="/login.html?tab=register" class="btn btn-gold">Cadastrar-se</a>
       </div>
@@ -55,47 +56,44 @@
   <section class="hero">
     <div class="container hero-grid">
       <div>
-        <div class="eyebrow">⚖ Excelência Jurídica & Atendimento Digital</div>
+        <div class="eyebrow">⚖ Atendimento Jurídico Digital & Personalizado</div>
         <h1 data-brand="firmHeroHeadline">Defesa Estratégica com Excelência e Rigor Jurídico.</h1>
         <p data-brand="firmHeroSubtitle">
-          Atuação personalizada em Direito Empresarial, Civil, Trabalhista Estratégico e Planejamento Patrimonial. Acompanhe seu processo, envie documentos e converse diretamente com o advogado.
+          Escolha seu advogado especialista, envie documentos em PDF, acompanhe processos em tempo real e agende sua consulta online ou presencial.
         </p>
 
         <div class="hero-cta-row">
           <a href="#atendimento" class="btn btn-gold">💬 Explicar Meu Caso ao Advogado</a>
+          <a href="#agendar" class="btn btn-outline">📅 Agendar Horário</a>
           <a href="/login.html?tab=login" class="btn btn-outline">📂 Portal do Cliente / Admin</a>
         </div>
 
         <div class="hero-stats">
           <div class="stat-item">
             <strong>+15 Anos</strong>
-            <span>Experiência nos Tribunais</span>
+            <span>Atuação nos Tribunais</span>
           </div>
           <div class="stat-item">
-            <strong>98%</strong>
-            <span>Índice de Satisfação</span>
+            <strong id="hero-rating-score">5.0 ★</strong>
+            <span id="hero-rating-count">Avaliação dos Clientes</span>
           </div>
           <div class="stat-item">
-            <strong>100% Digital</strong>
-            <span>Chat & Protocolo Online</span>
+            <strong>100% Online</strong>
+            <span>Chat & Protocolo PDF</span>
           </div>
         </div>
       </div>
 
-      <!-- CARTÃO DO ADVOGADO TITULAR (EDITÁVEL EM public/js/config.js) -->
+      <!-- CARTÃO DE CONTATO DO ESCRITÓRIO -->
       <div class="card" style="border-color: var(--border-color); box-shadow: var(--shadow-lg);">
-        <span class="badge badge-gold" style="margin-bottom: 12px;">Advogado Titular</span>
-        <h2 style="font-family: var(--font-serif); font-size: 1.9rem; margin-bottom: 4px;" data-brand="lawyerName">
-          Dr. Henrique Valença
+        <span class="badge badge-gold" style="margin-bottom: 10px;">Sede & Atendimento Nacional</span>
+        <h2 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 8px;" data-brand="firmName">
+          AUREUM | Advocacia & Consultoria Jurídica
         </h2>
-        <p style="color: var(--gold-500); font-weight: 700; font-size: 0.9rem; margin-bottom: 16px;" data-brand="lawyerOab">
-          OAB/SP 348.920
+        <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 18px;">
+          Atendimento presencial e por videoconferência para todo o Brasil com sigilo absoluto e acompanhamento processual transparente.
         </p>
-        <p style="color: var(--text-secondary); font-size: 0.92rem; margin-bottom: 20px;">
-          Especialista em contencioso estratégico, consultoria empresarial preventiva e defesa de direitos patrimoniais. Atendimento transparente com acesso direto ao andamento processual.
-        </p>
-
-        <div style="display: flex; flex-direction: column; gap: 10px; padding-top: 16px; border-top: 1px solid var(--border-subtle); font-size: 0.88rem;">
+        <div style="display: flex; flex-direction: column; gap: 10px; padding-top: 14px; border-top: 1px solid var(--border-subtle); font-size: 0.9rem;">
           <div><strong>📧 E-mail:</strong> <span data-brand="lawyerEmail">contato@aureumadvocacia.com.br</span></div>
           <div><strong>📱 WhatsApp:</strong> <span data-brand="lawyerPhone">(11) 99842-7100</span></div>
           <div><strong>📍 Endereço:</strong> <span data-brand="firmAddress">Av. Brigadeiro Faria Lima, 3477 - São Paulo - SP</span></div>
@@ -104,97 +102,73 @@
     </div>
   </section>
 
-  <!-- SOBRE O ESCRITÓRIO -->
-  <section id="sobre" class="section" style="background: var(--bg-secondary); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle);">
+  <!-- =========================================================================
+       EQUIPE DE ADVOGADOS (RENDERIZA TODOS OS ADVOGADOS CADASTRADOS NO SISTEMA)
+       ========================================================================= -->
+  <section id="advogados" class="section" style="background: var(--bg-secondary); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle);">
     <div class="container">
       <div class="section-header">
-        <span class="badge badge-gold" style="margin-bottom: 10px;">Institucional</span>
-        <h2>Tradição Jurídica Aliada à Tecnologia</h2>
-        <p>Nosso escritório combina rigor técnico artesanal com uma plataforma exclusiva para nossos clientes acompanharem cada movimentação e enviarem documentos com segurança total.</p>
+        <span class="badge badge-gold" style="margin-bottom: 10px;">Corpo Jurídico</span>
+        <h2>Conheça Nossos Advogados</h2>
+        <p>Selecione o especialista ideal para o seu caso e inicie seu atendimento diretamente pelo site.</p>
       </div>
 
-      <div class="grid-3">
-        <div class="card">
-          <div class="area-icon">🛡️</div>
-          <h3 style="margin-bottom: 8px;">Sigilo & Segurança</h3>
-          <p style="color: var(--text-secondary); font-size: 0.92rem;">Envio criptografado de contratos, procurações e PDFs diretamente para a mesa do advogado responsável.</p>
-        </div>
-        <div class="card">
-          <div class="area-icon">💬</div>
-          <h3 style="margin-bottom: 8px;">Canal Direto Estilo WhatsApp</h3>
-          <p style="color: var(--text-secondary); font-size: 0.92rem;">Converse diretamente com o advogado pelo portal, tire dúvidas e receba orientações sem intermediários.</p>
-        </div>
-        <div class="card">
-          <div class="area-icon">📅</div>
-          <h3 style="margin-bottom: 8px;">Agenda Sincronizada</h3>
-          <p style="color: var(--text-secondary); font-size: 0.92rem;">Agende reuniões presenciais ou por videoconferência nos horários disponíveis em tempo real.</p>
-        </div>
-      </div>
+      <div id="public-lawyers-grid" class="grid-3"></div>
     </div>
   </section>
 
-  <!-- ÁREAS DE ATUAÇÃO -->
-  <section id="areas" class="section">
+  <!-- =========================================================================
+       ATENDIMENTO & AGENDAMENTO (EMPILHADOS VERTICALMENTE PARA CELULAR E PC)
+       ========================================================================= -->
+  <section class="section">
     <div class="container">
-      <div class="section-header">
-        <span class="badge badge-gold" style="margin-bottom: 10px;">Especialidades</span>
-        <h2>Áreas de Atuação Jurídica</h2>
-        <p>Soluções jurídicas completas para pessoas físicas, executivos e empresas.</p>
+      <div class="section-header" style="margin: 0 auto 30px; text-align: center;">
+        <span class="badge badge-gold" style="margin-bottom: 10px;">Atendimento Direto</span>
+        <h2>Envie seu Caso ou Agende uma Consulta</h2>
+        <p>Preencha com calma no celular ou computador. Escolha o advogado responsável e envie seus PDFs com segurança.</p>
       </div>
 
-      <div class="grid-4">
-        <div class="card area-card">
-          <div class="area-icon">🏛️</div>
-          <h3 style="margin-bottom: 8px;">Direito Civil & Contratos</h3>
-          <p style="color: var(--text-secondary); font-size: 0.88rem;">Indenizações, responsabilidade civil, revisão e elaboração de contratos de alto valor.</p>
-        </div>
-        <div class="card area-card">
-          <div class="area-icon">💼</div>
-          <h3 style="margin-bottom: 8px;">Direito Empresarial</h3>
-          <p style="color: var(--text-secondary); font-size: 0.88rem;">Assessoria societária, recuperação de crédito, blindagem patrimonial e governança.</p>
-        </div>
-        <div class="card area-card">
-          <div class="area-icon">⚖️</div>
-          <h3 style="margin-bottom: 8px;">Trabalhista Estratégico</h3>
-          <p style="color: var(--text-secondary); font-size: 0.88rem;">Defesa corporativa, auditoria preventiva e reclamações trabalhistas de alta complexidade.</p>
-        </div>
-        <div class="card area-card">
-          <div class="area-icon">📜</div>
-          <h3 style="margin-bottom: 8px;">Família & Sucessões</h3>
-          <p style="color: var(--text-secondary); font-size: 0.88rem;">Inventários judiciais e extrajudiciais, holdings familiares e planejamento sucessório.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ENVIO DIRETO DE MENSAGEM + PDF PARA O CHAT DO ADVOGADO & AGENDAMENTO -->
-  <section id="atendimento" class="section" style="background: var(--bg-secondary); border-top: 1px solid var(--border-subtle);">
-    <div class="container grid-2" style="gap: 32px; align-items: start;">
-      <!-- FORMULÁRIO 1: EXPLICAR O CASO + ANEXAR PDF (VAI DIRETO PARA O CHAT DO PAINEL ADMIN) -->
-      <div class="card" style="border-color: var(--border-color);">
-        <span class="badge badge-gold" style="margin-bottom: 10px;">Atendimento Imediato</span>
-        <h2 style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 8px;">Envie seu Caso & Documentos</h2>
-        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">
-          Explique sua situação e anexe PDFs ou documentos. Sua mensagem chega instantaneamente no painel do advogado para resposta direta.
-        </p>
-
-        <form id="public-case-form">
-          <div class="grid-2">
-            <div class="form-group">
-              <label class="form-label">Seu Nome Completo *</label>
-              <input type="text" id="pub-name" class="form-control" placeholder="Ex: Carlos Eduardo Silva" required />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Seu E-mail *</label>
-              <input type="email" id="pub-email" class="form-control" placeholder="carlos@email.com" required />
-            </div>
+      <div class="stacked-form-wrapper">
+        <!-- BLOCO 1: EXPLICAR CASO & ENVIAR PDF AO ADVOGADO ESCOLHIDO -->
+        <div id="atendimento" class="card" style="border-color: var(--border-color); box-shadow: var(--shadow-md);">
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <span class="badge badge-gold">1. Mensagem & Envio de Documentos</span>
+            <span style="font-size: 0.78rem; color: var(--success); font-weight: 700;">● Resposta Direta no Painel</span>
           </div>
+          <h3 style="font-family: var(--font-serif); font-size: 1.9rem; margin-bottom: 6px;">Explique seu Caso & Anexe PDFs</h3>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">
+            Escolha qual advogado vai analisar o seu caso, informe seu CPF válido e anexe documentos ou contratos.
+          </p>
 
-          <div class="grid-2">
+          <form id="public-case-form">
             <div class="form-group">
-              <label class="form-label">WhatsApp / Telefone *</label>
-              <input type="text" id="pub-phone" class="form-control" placeholder="(11) 99999-0000" required />
+              <label class="form-label">Escolha o Advogado Responsável *</label>
+              <select id="pub-lawyer-select" class="form-control" required></select>
             </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Seu Nome Completo *</label>
+                <input type="text" id="pub-name" class="form-control" placeholder="Ex: Carlos Eduardo Silva" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Seu CPF (11 dígitos) *</label>
+                <input type="text" id="pub-cpf" class="form-control" placeholder="000.000.000-00" maxlength="14" required />
+                <span id="pub-cpf-hint" class="validation-hint"></span>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Seu E-mail *</label>
+                <input type="email" id="pub-email" class="form-control" placeholder="carlos@email.com" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">WhatsApp / Telefone *</label>
+                <input type="text" id="pub-phone" class="form-control" placeholder="(11) 99999-0000" required />
+              </div>
+            </div>
+
             <div class="form-group">
               <label class="form-label">Área Jurídica</label>
               <select id="pub-area" class="form-control">
@@ -205,99 +179,182 @@
                 <option value="Outro Assunto">Outro Assunto</option>
               </select>
             </div>
-          </div>
 
-          <div class="form-group">
-            <label class="form-label">Explique seu Caso Detalhadamente *</label>
-            <textarea id="pub-message" class="form-control" rows="4" placeholder="Descreva os fatos, prazos ou dúvidas para o advogado analisar..." required></textarea>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Anexar PDF ou Documento (Opcional)</label>
-            <input type="file" id="pub-file" class="form-control" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
-          </div>
-
-          <button type="submit" class="btn btn-gold" style="width: 100%; padding: 13px;">
-            📩 Enviar Mensagem & Documento ao Advogado
-          </button>
-        </form>
-      </div>
-
-      <!-- FORMULÁRIO 2: AGENDAR REUNIÃO NA AGENDA DO ADVOGADO -->
-      <div id="agendar" class="card">
-        <span class="badge badge-info" style="margin-bottom: 10px;">Agenda Online</span>
-        <h2 style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 8px;">Agendar Consulta Jurídica</h2>
-        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">
-          Escolha uma data e veja automaticamente os horários livres configurados pelo advogado.
-        </p>
-
-        <form id="public-booking-form">
-          <div class="grid-2">
             <div class="form-group">
-              <label class="form-label">Nome Completo *</label>
-              <input type="text" id="book-name" class="form-control" placeholder="Seu nome" required />
+              <label class="form-label">Explique seu Caso Detalhadamente *</label>
+              <textarea id="pub-message" class="form-control" rows="4" placeholder="Descreva os fatos, datas e dúvidas para o advogado..." required></textarea>
             </div>
-            <div class="form-group">
-              <label class="form-label">E-mail *</label>
-              <input type="email" id="book-email" class="form-control" placeholder="seu@email.com" required />
-            </div>
-          </div>
 
-          <div class="grid-2">
             <div class="form-group">
-              <label class="form-label">WhatsApp *</label>
-              <input type="text" id="book-phone" class="form-control" placeholder="(11) 98888-7777" required />
+              <label class="form-label">Anexar PDF ou Documento (Opcional)</label>
+              <input type="file" id="pub-file" class="form-control" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" />
             </div>
-            <div class="form-group">
-              <label class="form-label">Modalidade</label>
-              <select id="book-modality" class="form-control">
-                <option value="Videoconferência">Videoconferência (Online)</option>
-                <option value="Presencial">Presencial no Escritório</option>
-              </select>
-            </div>
-          </div>
 
-          <div class="grid-2">
-            <div class="form-group">
-              <label class="form-label">Data Desejada *</label>
-              <input type="date" id="book-date" class="form-control" required />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Horário Disponível *</label>
-              <select id="book-time" class="form-control" required>
-                <option value="">Selecione uma data primeiro</option>
-              </select>
-            </div>
-          </div>
+            <button type="submit" class="btn btn-gold" style="width: 100%; min-height: 50px; font-size: 0.98rem;">
+              📩 Enviar Caso & Documento ao Advogado
+            </button>
+          </form>
+        </div>
 
-          <div class="form-group">
-            <label class="form-label">Assunto da Reunião *</label>
-            <input type="text" id="book-subject" class="form-control" placeholder="Ex: Análise de contrato empresarial" required />
+        <!-- BLOCO 2: AGENDAR REUNIÃO COM HORÁRIOS DISPONÍVEIS -->
+        <div id="agendar" class="card" style="box-shadow: var(--shadow-md);">
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px;">
+            <span class="badge badge-info">2. Agenda Online Sincronizada</span>
+            <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Online ou Presencial</span>
           </div>
+          <h3 style="font-family: var(--font-serif); font-size: 1.9rem; margin-bottom: 6px;">Agendar Consulta Jurídica</h3>
+          <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">
+            Selecione o advogado, a data e escolha um dos horários livres na agenda.
+          </p>
 
-          <button type="submit" class="btn btn-outline" style="width: 100%; padding: 13px; border-color: var(--gold-500);">
-            📅 Confirmar Horário na Agenda
-          </button>
-        </form>
+          <form id="public-booking-form">
+            <div class="form-group">
+              <label class="form-label">Advogado para Atendimento *</label>
+              <select id="book-lawyer-select" class="form-control" required></select>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Seu Nome Completo *</label>
+                <input type="text" id="book-name" class="form-control" placeholder="Seu nome" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Seu E-mail *</label>
+                <input type="email" id="book-email" class="form-control" placeholder="seu@email.com" required />
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">WhatsApp *</label>
+                <input type="text" id="book-phone" class="form-control" placeholder="(11) 98888-7777" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Modalidade</label>
+                <select id="book-modality" class="form-control">
+                  <option value="Videoconferência">Videoconferência (Online)</option>
+                  <option value="Presencial">Presencial no Escritório</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Data Desejada *</label>
+                <input type="date" id="book-date" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Horário Livre *</label>
+                <select id="book-time" class="form-control" required>
+                  <option value="">Selecione uma data primeiro</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Assunto da Reunião *</label>
+              <input type="text" id="book-subject" class="form-control" placeholder="Ex: Revisão contratual ou orientação trabalhista" required />
+            </div>
+
+            <button type="submit" class="btn btn-outline" style="width: 100%; min-height: 50px; border-color: var(--gold-500); font-size: 0.98rem;">
+              📅 Confirmar Horário na Agenda
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- FOOTER -->
-  <footer style="padding: 36px 0; border-top: 1px solid var(--border-subtle); font-size: 0.86rem; color: var(--text-secondary);">
-    <div class="container" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px;">
-      <div>
-        <strong data-brand="firmName" style="color: var(--text-primary);">AUREUM | Advocacia & Consultoria Jurídica</strong> —
-        <span data-brand="lawyerOab">OAB/SP 348.920</span>
+  <!-- =========================================================================
+       SISTEMA COMPLETO DE AVALIAÇÕES DOS CLIENTES
+       ========================================================================= -->
+  <section id="avaliacoes" class="section" style="background: var(--bg-secondary); border-top: 1px solid var(--border-subtle);">
+    <div class="container">
+      <div class="section-header">
+        <span class="badge badge-gold" style="margin-bottom: 10px;">Reputação & Confiança</span>
+        <h2>Avaliações de Nossos Clientes</h2>
+        <p>Veja o que clientes reais dizem sobre o atendimento do nosso escritório e deixe sua avaliação.</p>
       </div>
-      <div style="display: flex; gap: 18px;">
+
+      <!-- RESUMO DE NOTA GERAL + FORMULÁRIO DE NOVA AVALIAÇÃO -->
+      <div class="stacked-form-wrapper" style="margin-bottom: 36px;">
+        <div class="card" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; border-color: var(--border-color);">
+          <div>
+            <div style="font-size: 0.8rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">Nota Média do Escritório</div>
+            <div style="display: flex; align-items: baseline; gap: 10px;">
+              <strong id="reviews-avg-big" style="font-family: var(--font-serif); font-size: 3.2rem; color: var(--gold-500); line-height: 1;">5.0</strong>
+              <span class="stars-display" style="font-size: 1.35rem;">★★★★★</span>
+            </div>
+            <div id="reviews-total-label" style="font-size: 0.86rem; color: var(--text-secondary); margin-top: 4px;">Baseado em avaliações verificadas</div>
+          </div>
+
+          <div style="flex: 1; min-width: 240px;" id="reviews-breakdown"></div>
+        </div>
+
+        <!-- FORMULÁRIO PARA CLIENTE DEIXAR AVALIAÇÃO -->
+        <div class="card">
+          <h3 style="font-family: var(--font-serif); font-size: 1.7rem; margin-bottom: 6px;">Deixe sua Avaliação</h3>
+          <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 16px;">
+            Foi atendido por um de nossos advogados? Sua opinião ajuda outros clientes.
+          </p>
+          <form id="public-review-form">
+            <div class="form-group">
+              <label class="form-label">Sua Nota (Clique nas Estrelas) *</label>
+              <div class="star-picker" id="public-star-picker">
+                <button type="button" class="star-btn active" data-star="1">★</button>
+                <button type="button" class="star-btn active" data-star="2">★</button>
+                <button type="button" class="star-btn active" data-star="3">★</button>
+                <button type="button" class="star-btn active" data-star="4">★</button>
+                <button type="button" class="star-btn active" data-star="5">★</button>
+              </div>
+              <input type="hidden" id="rev-rating" value="5" />
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Seu Nome *</label>
+                <input type="text" id="rev-name" class="form-control" placeholder="Ex: João Pedro Santos" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Advogado que Atendeu *</label>
+                <select id="rev-lawyer-select" class="form-control" required></select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Área Atendida</label>
+              <input type="text" id="rev-area" class="form-control" placeholder="Ex: Direito Civil, Trabalhista, Empresarial..." />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Seu Depoimento *</label>
+              <textarea id="rev-comment" class="form-control" rows="3" placeholder="Conte como foi sua experiência com o atendimento e agilidade do advogado..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-gold" style="width: 100%;">⭐ Publicar Avaliação</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- LISTA DE DEPOIMENTOS PUBLICADOS -->
+      <div id="public-reviews-grid" class="grid-2" style="gap: 20px;"></div>
+    </div>
+  </section>
+
+  <footer style="padding: 32px 0; border-top: 1px solid var(--border-subtle); font-size: 0.86rem; color: var(--text-secondary);">
+    <div class="container" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px;">
+      <div>
+        <strong data-brand="firmName" style="color: var(--text-primary);">AUREUM | Advocacia & Consultoria Jurídica</strong>
+      </div>
+      <div style="display: flex; gap: 16px;">
         <a href="/login.html?tab=login">Portal do Cliente</a>
-        <a href="/login.html?tab=admin">Acesso Advogado</a>
+        <a href="/login.html?tab=admin">Área do Advogado</a>
       </div>
     </div>
   </footer>
 
   <script src="/js/config.js"></script>
+  <script src="/js/validators.js"></script>
   <script src="/js/store.js"></script>
   <script src="/js/public.js"></script>
 </body>

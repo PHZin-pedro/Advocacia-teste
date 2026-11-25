@@ -11,11 +11,9 @@
   <div id="app-loader">
     <div class="loader-emblem">⚖</div>
     <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
-    <div class="loader-text">Carregando seus processos e mensagens...</div>
   </div>
 
   <div class="app-shell">
-    <!-- SIDEBAR DO CLIENTE -->
     <aside class="sidebar">
       <div>
         <a href="/index.html" class="brand">
@@ -27,57 +25,50 @@
         </a>
 
         <nav class="sidebar-nav">
-          <button class="sidebar-btn active" data-tab="chat">
-            <span class="label-wrap">💬 Chat & Enviar PDF</span>
-          </button>
-          <button class="sidebar-btn" data-tab="processos">
-            <span class="label-wrap">⚖️ Meus Processos</span>
-          </button>
-          <button class="sidebar-btn" data-tab="documentos">
-            <span class="label-wrap">📁 Meus Documentos</span>
-          </button>
-          <button class="sidebar-btn" data-tab="agenda">
-            <span class="label-wrap">📅 Agendar Reunião</span>
-          </button>
+          <button class="sidebar-btn active" data-tab="chat">💬 Chat & PDFs</button>
+          <button class="sidebar-btn" data-tab="processos">⚖️ Processos</button>
+          <button class="sidebar-btn" data-tab="documentos">📁 Documentos</button>
+          <button class="sidebar-btn" data-tab="agenda">📅 Agendar</button>
+          <button class="sidebar-btn" data-tab="avaliar">⭐ Avaliar</button>
         </nav>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <div style="padding: 12px; border-radius: 10px; background: var(--bg-elevated); font-size: 0.82rem;">
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px;">
+        <div style="padding: 10px 12px; border-radius: 10px; background: var(--bg-elevated); font-size: 0.8rem;">
           <strong id="client-sidebar-name" style="display: block;">Cliente</strong>
           <span id="client-sidebar-email" style="color: var(--text-muted); word-break: break-all;"></span>
         </div>
         <div style="display: flex; gap: 8px;">
-          <button class="icon-btn" data-theme-toggle onclick="AureumStore.toggleTheme()">🌙</button>
+          <button class="icon-btn" data-theme-toggle data-theme-label onclick="AureumStore.toggleTheme()">🌙 Modo Escuro</button>
           <button class="btn btn-outline btn-sm" style="flex: 1;" onclick="AureumStore.logout()">Sair</button>
         </div>
       </div>
     </aside>
 
-    <!-- ÁREA PRINCIPAL -->
     <main class="main-workspace">
       <div class="topbar">
         <div>
-          <h1 style="font-family: var(--font-serif); font-size: 1.9rem;">Área Exclusiva do Cliente</h1>
-          <p style="color: var(--text-secondary); font-size: 0.88rem;">
-            Converse diretamente com <strong data-brand="lawyerName">Dr. Henrique Valença</strong>, envie PDFs e acompanhe seu caso.
+          <h1 style="font-family: var(--font-serif); font-size: 1.8rem;">Área do Cliente</h1>
+          <p style="color: var(--text-secondary); font-size: 0.86rem;">
+            Escolha o advogado, envie documentos em PDF e acompanhe seu caso.
           </p>
         </div>
-        <a href="/index.html" class="btn btn-outline btn-sm">Site Institucional</a>
+        <div class="topbar-actions">
+          <button class="icon-btn" data-theme-toggle data-theme-label onclick="AureumStore.toggleTheme()">🌙 Modo Escuro</button>
+          <a href="/index.html" class="btn btn-outline btn-sm">Site Inicial</a>
+        </div>
       </div>
 
-      <!-- ABA 1: CHAT ESTILO WHATSAPP COM O ADVOGADO + ENVIO DE DOCUMENTOS/PDF -->
+      <!-- ABA 1: CHAT ESTILO WHATSAPP COM ESCOLHA DE ADVOGADO -->
       <section id="tab-chat" class="tab-panel active">
         <div class="whatsapp-layout single-thread">
           <div class="chat-thread">
             <div class="chat-thread-header">
-              <div>
-                <strong style="font-size: 1rem;" data-brand="lawyerName">Dr. Henrique Valença</strong>
-                <div style="font-size: 0.78rem; color: var(--success); font-weight: 600;">
-                  ● Canal Direto do Escritório — Envie mensagens e anexos PDF
-                </div>
+              <div style="flex: 1; min-width: 210px;">
+                <label class="form-label" style="font-size: 0.75rem; margin-bottom: 4px; display: block;">Conversando com:</label>
+                <select id="client-chat-lawyer-select" class="form-control" style="min-height: 38px; padding: 6px 10px;"></select>
               </div>
-              <span class="badge badge-gold" data-brand="lawyerOab">OAB/SP 348.920</span>
+              <span class="badge badge-success">● Canal Direto Criptografado</span>
             </div>
 
             <div id="client-chat-messages" class="chat-messages"></div>
@@ -85,62 +76,61 @@
             <form id="client-chat-form" class="chat-composer">
               <div id="client-file-preview" style="display: none; font-size: 0.8rem; color: var(--gold-600); font-weight: 600;"></div>
               <div class="chat-composer-row">
-                <label class="icon-btn" title="Anexar PDF ou Documento" style="cursor: pointer;">
+                <label class="icon-btn" title="Anexar PDF" style="cursor: pointer;">
                   📎
                   <input type="file" id="client-chat-file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display: none;" />
                 </label>
-                <input type="text" id="client-chat-input" class="form-control" placeholder="Explique seu caso ou envie uma mensagem ao advogado..." />
-                <button type="submit" class="btn btn-gold">Enviar ➤</button>
+                <input type="text" id="client-chat-input" class="form-control" placeholder="Digite sua mensagem ou anexe um PDF..." />
+                <button type="submit" class="btn btn-gold">Enviar</button>
               </div>
             </form>
           </div>
         </div>
       </section>
 
-      <!-- ABA 2: MEUS PROCESSOS -->
+      <!-- ABA 2: PROCESSOS -->
       <section id="tab-processos" class="tab-panel">
-        <div id="client-cases-list" style="display: flex; flex-direction: column; gap: 18px;"></div>
+        <div id="client-cases-list" style="display: flex; flex-direction: column; gap: 16px;"></div>
       </section>
 
-      <!-- ABA 3: MEUS DOCUMENTOS & PDFS -->
+      <!-- ABA 3: DOCUMENTOS -->
       <section id="tab-documentos" class="tab-panel">
-        <div class="card" style="margin-bottom: 20px;">
-          <h3 style="margin-bottom: 12px;">Enviar Novo PDF / Documento para o Advogado</h3>
-          <form id="client-doc-upload-form" class="grid-3" style="align-items: end;">
-            <div class="form-group" style="margin-bottom: 0;">
-              <label class="form-label">Título do Documento *</label>
-              <input type="text" id="cdoc-title" class="form-control" placeholder="Ex: RG, Comprovante, Contrato..." required />
-            </div>
-            <div class="form-group" style="margin-bottom: 0;">
-              <label class="form-label">Arquivo (PDF, DOCX, Imagem) *</label>
-              <input type="file" id="cdoc-file" class="form-control" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required />
+        <div class="card" style="margin-bottom: 18px;">
+          <h3 style="margin-bottom: 12px;">Enviar Novo PDF / Documento</h3>
+          <form id="client-doc-upload-form">
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Título do Documento *</label>
+                <input type="text" id="cdoc-title" class="form-control" placeholder="Ex: Contrato, Procuração, Comprovante..." required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Arquivo (PDF, DOCX, Imagem) *</label>
+                <input type="file" id="cdoc-file" class="form-control" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required />
+              </div>
             </div>
             <button type="submit" class="btn btn-gold">📤 Enviar Documento</button>
           </form>
         </div>
-
         <div class="card table-wrap">
           <table>
             <thead>
-              <tr>
-                <th>Documento</th>
-                <th>Arquivo</th>
-                <th>Data</th>
-                <th>Status</th>
-                <th>Ação</th>
-              </tr>
+              <tr><th>Documento</th><th>Arquivo</th><th>Data</th><th>Status</th><th>Ação</th></tr>
             </thead>
             <tbody id="client-docs-tbody"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- ABA 4: AGENDAR REUNIÃO COM O ADVOGADO -->
+      <!-- ABA 4: AGENDA -->
       <section id="tab-agenda" class="tab-panel">
-        <div class="grid-2">
+        <div style="display: flex; flex-direction: column; gap: 20px; max-width: 720px;">
           <div class="card">
-            <h3 style="margin-bottom: 14px;">Marcar Nova Reunião</h3>
+            <h3 style="margin-bottom: 14px;">Marcar Reunião com o Advogado</h3>
             <form id="client-apt-form">
+              <div class="form-group">
+                <label class="form-label">Advogado *</label>
+                <select id="capt-lawyer" class="form-control" required></select>
+              </div>
               <div class="grid-2">
                 <div class="form-group">
                   <label class="form-label">Data *</label>
@@ -148,9 +138,7 @@
                 </div>
                 <div class="form-group">
                   <label class="form-label">Horário Livre *</label>
-                  <select id="capt-time" class="form-control" required>
-                    <option value="">Selecione a data</option>
-                  </select>
+                  <select id="capt-time" class="form-control" required><option value="">Selecione a data</option></select>
                 </div>
               </div>
               <div class="form-group">
@@ -161,23 +149,55 @@
                 </select>
               </div>
               <div class="form-group">
-                <label class="form-label">Assunto da Reunião *</label>
-                <input type="text" id="capt-subject" class="form-control" placeholder="Ex: Dúvidas sobre andamento do processo" required />
+                <label class="form-label">Assunto *</label>
+                <input type="text" id="capt-subject" class="form-control" required />
               </div>
               <button type="submit" class="btn btn-gold" style="width: 100%;">Confirmar Agendamento</button>
             </form>
           </div>
-
           <div class="card">
-            <h3 style="margin-bottom: 14px;">Minhas Reuniões & Audiências</h3>
-            <div id="client-apts-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+            <h3 style="margin-bottom: 12px;">Minhas Reuniões Agendadas</h3>
+            <div id="client-apts-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
           </div>
+        </div>
+      </section>
+
+      <!-- ABA 5: AVALIAR ATENDIMENTO -->
+      <section id="tab-avaliar" class="tab-panel">
+        <div class="card" style="max-width: 680px;">
+          <h3 style="font-family: var(--font-serif); font-size: 1.8rem; margin-bottom: 6px;">Avaliar Atendimento do Advogado</h3>
+          <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 16px;">
+            Sua avaliação será exibida na página inicial do escritório.
+          </p>
+          <form id="client-review-form">
+            <div class="form-group">
+              <label class="form-label">Nota (1 a 5 Estrelas) *</label>
+              <div class="star-picker" id="client-star-picker">
+                <button type="button" class="star-btn active" data-star="1">★</button>
+                <button type="button" class="star-btn active" data-star="2">★</button>
+                <button type="button" class="star-btn active" data-star="3">★</button>
+                <button type="button" class="star-btn active" data-star="4">★</button>
+                <button type="button" class="star-btn active" data-star="5">★</button>
+              </div>
+              <input type="hidden" id="crev-rating" value="5" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Advogado Avaliado *</label>
+              <select id="crev-lawyer" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Seu Comentário *</label>
+              <textarea id="crev-comment" class="form-control" rows="4" placeholder="Escreva sua opinião sobre o atendimento..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-gold" style="width: 100%;">⭐ Enviar Avaliação</button>
+          </form>
         </div>
       </section>
     </main>
   </div>
 
   <script src="/js/config.js"></script>
+  <script src="/js/validators.js"></script>
   <script src="/js/store.js"></script>
   <script src="/js/client.js"></script>
 </body>

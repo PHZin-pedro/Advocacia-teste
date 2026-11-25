@@ -1,7 +1,7 @@
 {
   "name": "aureum-advocacia-pro",
-  "version": "2.0.0",
-  "description": "Plataforma Jurídica Completa White & Gold com Portal do Cliente, Painel Administrativo, Chat estilo WhatsApp, Agenda Inteligente e Integração Supabase + Render/Vercel.",
+  "version": "3.0.0",
+  "description": "Plataforma Jurídica Multi-Advogados White & Gold com Perfil Editável, Validação CPF/OAB, Avaliações com Estrelas, Chat estilo WhatsApp, Agenda Inteligente e Integração Supabase + Vercel/Render.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -11,14 +11,6 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "keywords": [
-    "advocacia",
-    "juridico",
-    "saas",
-    "supabase",
-    "render",
-    "vercel"
-  ],
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
