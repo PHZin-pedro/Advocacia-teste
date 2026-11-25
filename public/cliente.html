@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal do Cliente | AUREUM Advocacia</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <div id="app-loader">
+    <div class="loader-emblem">⚖</div>
+    <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+    <div class="loader-text">Carregando seus processos e mensagens...</div>
+  </div>
+
+  <div class="app-shell">
+    <!-- SIDEBAR DO CLIENTE -->
+    <aside class="sidebar">
+      <div>
+        <a href="/index.html" class="brand">
+          <div class="brand-mark">A</div>
+          <div class="brand-text">
+            <strong data-brand="firmShortName">AUREUM</strong>
+            <span>Portal do Cliente</span>
+          </div>
+        </a>
+
+        <nav class="sidebar-nav">
+          <button class="sidebar-btn active" data-tab="chat">
+            <span class="label-wrap">💬 Chat & Enviar PDF</span>
+          </button>
+          <button class="sidebar-btn" data-tab="processos">
+            <span class="label-wrap">⚖️ Meus Processos</span>
+          </button>
+          <button class="sidebar-btn" data-tab="documentos">
+            <span class="label-wrap">📁 Meus Documentos</span>
+          </button>
+          <button class="sidebar-btn" data-tab="agenda">
+            <span class="label-wrap">📅 Agendar Reunião</span>
+          </button>
+        </nav>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="padding: 12px; border-radius: 10px; background: var(--bg-elevated); font-size: 0.82rem;">
+          <strong id="client-sidebar-name" style="display: block;">Cliente</strong>
+          <span id="client-sidebar-email" style="color: var(--text-muted); word-break: break-all;"></span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="icon-btn" data-theme-toggle onclick="AureumStore.toggleTheme()">🌙</button>
+          <button class="btn btn-outline btn-sm" style="flex: 1;" onclick="AureumStore.logout()">Sair</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ÁREA PRINCIPAL -->
+    <main class="main-workspace">
+      <div class="topbar">
+        <div>
+          <h1 style="font-family: var(--font-serif); font-size: 1.9rem;">Área Exclusiva do Cliente</h1>
+          <p style="color: var(--text-secondary); font-size: 0.88rem;">
+            Converse diretamente com <strong data-brand="lawyerName">Dr. Henrique Valença</strong>, envie PDFs e acompanhe seu caso.
+          </p>
+        </div>
+        <a href="/index.html" class="btn btn-outline btn-sm">Site Institucional</a>
+      </div>
+
+      <!-- ABA 1: CHAT ESTILO WHATSAPP COM O ADVOGADO + ENVIO DE DOCUMENTOS/PDF -->
+      <section id="tab-chat" class="tab-panel active">
+        <div class="whatsapp-layout single-thread">
+          <div class="chat-thread">
+            <div class="chat-thread-header">
+              <div>
+                <strong style="font-size: 1rem;" data-brand="lawyerName">Dr. Henrique Valença</strong>
+                <div style="font-size: 0.78rem; color: var(--success); font-weight: 600;">
+                  ● Canal Direto do Escritório — Envie mensagens e anexos PDF
+                </div>
+              </div>
+              <span class="badge badge-gold" data-brand="lawyerOab">OAB/SP 348.920</span>
+            </div>
+
+            <div id="client-chat-messages" class="chat-messages"></div>
+
+            <form id="client-chat-form" class="chat-composer">
+              <div id="client-file-preview" style="display: none; font-size: 0.8rem; color: var(--gold-600); font-weight: 600;"></div>
+              <div class="chat-composer-row">
+                <label class="icon-btn" title="Anexar PDF ou Documento" style="cursor: pointer;">
+                  📎
+                  <input type="file" id="client-chat-file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display: none;" />
+                </label>
+                <input type="text" id="client-chat-input" class="form-control" placeholder="Explique seu caso ou envie uma mensagem ao advogado..." />
+                <button type="submit" class="btn btn-gold">Enviar ➤</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABA 2: MEUS PROCESSOS -->
+      <section id="tab-processos" class="tab-panel">
+        <div id="client-cases-list" style="display: flex; flex-direction: column; gap: 18px;"></div>
+      </section>
+
+      <!-- ABA 3: MEUS DOCUMENTOS & PDFS -->
+      <section id="tab-documentos" class="tab-panel">
+        <div class="card" style="margin-bottom: 20px;">
+          <h3 style="margin-bottom: 12px;">Enviar Novo PDF / Documento para o Advogado</h3>
+          <form id="client-doc-upload-form" class="grid-3" style="align-items: end;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Título do Documento *</label>
+              <input type="text" id="cdoc-title" class="form-control" placeholder="Ex: RG, Comprovante, Contrato..." required />
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label">Arquivo (PDF, DOCX, Imagem) *</label>
+              <input type="file" id="cdoc-file" class="form-control" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required />
+            </div>
+            <button type="submit" class="btn btn-gold">📤 Enviar Documento</button>
+          </form>
+        </div>
+
+        <div class="card table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Documento</th>
+                <th>Arquivo</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="client-docs-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ABA 4: AGENDAR REUNIÃO COM O ADVOGADO -->
+      <section id="tab-agenda" class="tab-panel">
+        <div class="grid-2">
+          <div class="card">
+            <h3 style="margin-bottom: 14px;">Marcar Nova Reunião</h3>
+            <form id="client-apt-form">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label">Data *</label>
+                  <input type="date" id="capt-date" class="form-control" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Horário Livre *</label>
+                  <select id="capt-time" class="form-control" required>
+                    <option value="">Selecione a data</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Modalidade</label>
+                <select id="capt-modality" class="form-control">
+                  <option value="Videoconferência">Videoconferência (Online)</option>
+                  <option value="Presencial">Presencial no Escritório</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Assunto da Reunião *</label>
+                <input type="text" id="capt-subject" class="form-control" placeholder="Ex: Dúvidas sobre andamento do processo" required />
+              </div>
+              <button type="submit" class="btn btn-gold" style="width: 100%;">Confirmar Agendamento</button>
+            </form>
+          </div>
+
+          <div class="card">
+            <h3 style="margin-bottom: 14px;">Minhas Reuniões & Audiências</h3>
+            <div id="client-apts-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/store.js"></script>
+  <script src="/js/client.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: aureum-advocacia
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: ADMIN_INVITE_CODE
+        value: AUREUM-ADMIN-2026

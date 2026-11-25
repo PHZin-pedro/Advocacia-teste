@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/config", "destination": "/api/config.js" },
+    { "source": "/login", "destination": "/public/login.html" },
+    { "source": "/cliente", "destination": "/public/cliente.html" },
+    { "source": "/admin", "destination": "/public/admin.html" },
+    { "source": "/(.*)", "destination": "/public/$1" }
+  ]
+}
