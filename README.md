@@ -1,9 +1,11 @@
-# ⚖️ AUREUM | Plataforma Jurídica Multi-Advogados (v3.0)
+# ⚖️ AUREUM | Plataforma Jurídica Multi-Advogados (Versão Definitiva v4.0)
 
-## Novidades desta Versão
-1. **Modo Escuro / Modo Claro em Todas as Abas:** Botão de alternância presente no cabeçalho de todas as páginas (`index.html`, `login.html`, `cliente.html`, `admin.html`) e no menu mobile.
-2. **Layout Mobile-First Refinado:** Formulários de **Explicar Caso & Enviar PDF** e **Agendar Consulta** empilhados verticalmente com espaçamento amplo para celular e desktop, além de menu mobile gaveta.
-3. **Validação Rigorosa de CPF (11 dígitos + Dígito Verificador) e OAB/UF:** Bloqueia digitação acima de 11 números no CPF, valida pelo algoritmo oficial Módulo 11 e verifica UF + número da inscrição OAB no cadastro de advogados.
-4. **Perfil Editável do Advogado + Equipe Dinâmica na Tela Inicial:** Na aba **👤 Meu Perfil & Chave**, cada advogado pode enviar sua foto, alterar nome, OAB, especialidade e descrição — e se houver 1, 2, 3 ou mais advogados cadastrados, todos aparecem automaticamente na tela inicial e na lista de escolha do cliente.
-5. **Chave Secreta Editável pelo Painel:** O administrador pode alterar a senha mestra (`adminInviteCode`) para criação de novas contas de advogado diretamente no painel.
-6. **Sistema Completo de Avaliações:** Nota média, barras de distribuição de 1★ a 5★, formulário interativo com estrelas clicáveis na tela inicial e no portal do cliente, e moderação/resposta pública no painel do advogado.
+## Funcionalidades Principais
+1. **Login Limpo e Seguro (`login.html`):** Sem botões de acesso rápido demonstrativo. Autenticação via e-mail e senha para Admin, Advogados e Clientes.
+2. **Hierarquia de Permissões (Admin vs. Advogado):**
+   - **Conta Admin (`role: 'admin'`):** Acesso exclusivo à **Chave Secreta** para novos advogados, edição de senhas de qualquer advogado e **exclusão imediata de conta** caso um advogado seja demitido (preservando os processos e mensagens históricas dos clientes).
+   - **Conta Advogado (`role: 'lawyer'`):** Acesso completo ao chat, PDFs, agenda, processos, avaliações e edição do próprio perfil público, **sem acesso à chave secreta** nem à gestão de contas de outros advogados.
+3. **Chats Mais Recentes no Topo:** A lista de conversas ordena automaticamente os atendimentos pela última mensagem recebida ou enviada.
+4. **Modo Escuro / Modo Claro em Todas as Abas:** Alternância sincronizada em todas as páginas (`index.html`, `login.html`, `cliente.html`, `admin.html`).
+5. **Validação Rigorosa de CPF (11 dígitos + Dígito Verificador) e OAB/UF.**
+6. **Integração Completa com Supabase (`supabase/schema.sql`) e Deploy em Vercel / Render.**

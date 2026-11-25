@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Painel do Advogado | AUREUM Advocacia</title>
+  <title>Painel Jurídico | AUREUM Advocacia</title>
   <link rel="stylesheet" href="/css/styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -20,7 +20,7 @@
           <div class="brand-mark">A</div>
           <div class="brand-text">
             <strong data-brand="firmShortName">AUREUM</strong>
-            <span>Painel do Advogado</span>
+            <span id="sidebar-panel-subtitle">Painel Jurídico</span>
           </div>
         </a>
 
@@ -33,13 +33,16 @@
           <button class="sidebar-btn" data-tab="processos">⚖️ Casos em Aberto</button>
           <button class="sidebar-btn" data-tab="documentos">📁 Documentos</button>
           <button class="sidebar-btn" data-tab="avaliacoes">⭐ Avaliações</button>
-          <button class="sidebar-btn" data-tab="perfil">👤 Meu Perfil & Chave</button>
+          <button class="sidebar-btn" data-tab="perfil" id="sidebar-btn-perfil">👤 Meu Perfil</button>
         </nav>
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px;">
         <div style="padding: 10px 12px; border-radius: 10px; background: var(--bg-elevated); font-size: 0.8rem;">
-          <strong id="admin-sidebar-name" style="display: block;">Advogado</strong>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 2px;">
+            <strong id="admin-sidebar-name" style="display: block;">Advogado</strong>
+            <span id="admin-role-badge" class="badge badge-gold" style="font-size: 0.65rem;">Advogado</span>
+          </div>
           <span id="admin-sidebar-oab" style="color: var(--gold-500); font-weight: 700;"></span>
         </div>
         <div style="display: flex; gap: 8px;">
@@ -52,7 +55,7 @@
     <main class="main-workspace">
       <div class="topbar">
         <div>
-          <h1 style="font-family: var(--font-serif); font-size: 1.85rem;">Central do Advogado</h1>
+          <h1 id="workspace-main-title" style="font-family: var(--font-serif); font-size: 1.85rem;">Central do Advogado</h1>
           <p style="color: var(--text-secondary); font-size: 0.86rem;">
             Gerencie conversas, PDFs, agenda, avaliações e seu perfil público na página inicial.
           </p>
@@ -84,12 +87,12 @@
         </div>
       </div>
 
-      <!-- ABA 1: CHAT ESTILO WHATSAPP COM FILTRO POR ADVOGADO -->
+      <!-- ABA 1: CHAT ESTILO WHATSAPP (CHATS MAIS RECENTES NO TOPO) -->
       <section id="tab-chat" class="tab-panel active">
         <div class="whatsapp-layout">
           <div class="chat-contacts">
             <div class="chat-contacts-header">
-              <strong style="display: block; margin-bottom: 8px;">Conversas & PDFs</strong>
+              <strong style="display: block; margin-bottom: 8px;">Conversas Recentes & PDFs</strong>
               <input type="text" id="chat-search-client" class="form-control" placeholder="Buscar cliente ou e-mail..." style="margin-bottom: 8px;" />
               <select id="chat-filter-lawyer" class="form-control" style="min-height: 38px; padding: 6px 10px; font-size: 0.84rem;">
                 <option value="all">Todas as Conversas do Escritório</option>
@@ -238,10 +241,10 @@
         </div>
       </section>
 
-      <!-- ABA 6: MEU PERFIL PÚBLICO (FOTO, NOME, OAB, DESCRIÇÃO) + CHAVE SECRETA ADMIN -->
+      <!-- ABA 6: MEU PERFIL PÚBLICO + (EXCLUSIVO ADMIN: GESTÃO DE ADVOGADOS & CHAVE SECRETA) -->
       <section id="tab-perfil" class="tab-panel">
-        <div style="display: flex; flex-direction: column; gap: 22px; max-width: 780px;">
-          <!-- CARD 1: PERFIL DO ADVOGADO QUE APARECE NA TELA INICIAL -->
+        <div style="display: flex; flex-direction: column; gap: 22px; max-width: 820px;">
+          <!-- CARD 1: PERFIL DO ADVOGADO/ADMIN QUE APARECE NA TELA INICIAL -->
           <div class="card" style="border-color: var(--border-color);">
             <span class="badge badge-gold" style="margin-bottom: 10px;">Exibido na Tela Inicial</span>
             <h3 style="font-family: var(--font-serif); font-size: 1.75rem; margin-bottom: 6px;">Meu Perfil Profissional</h3>
@@ -291,12 +294,22 @@
             </form>
           </div>
 
-          <!-- CARD 2: ALTERAR CHAVE SECRETA PARA CRIAR CONTA DE ADVOGADO + DADOS DO ESCRITÓRIO -->
-          <div class="card">
-            <span class="badge badge-danger" style="margin-bottom: 10px;">Segurança & Escritório</span>
-            <h3 style="font-family: var(--font-serif); font-size: 1.75rem; margin-bottom: 6px;">Chave Secreta de Advogados & Dados Gerais</h3>
+          <!-- CARD 2 (APENAS CONTA ADMIN): GERENCIAR CONTAS DE ADVOGADOS (EDITAR SENHA E DEMITIR/EXCLUIR) -->
+          <div id="admin-only-lawyers-card" class="card" style="display: none; border-color: var(--border-color);">
+            <span class="badge badge-gold" style="margin-bottom: 10px;">Exclusivo Administrador Master</span>
+            <h3 style="font-family: var(--font-serif); font-size: 1.75rem; margin-bottom: 6px;">⚖️ Gerenciar Advogados do Escritório</h3>
             <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 18px;">
-              Defina a senha mestra exigida na aba <strong>"Sou Advogado"</strong> da tela de cadastro para permitir novos advogados no painel.
+              Altere a senha de acesso de qualquer advogado ou exclua a conta imediatamente caso um advogado seja desligado/demitido.
+            </p>
+            <div id="admin-lawyers-management-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+          </div>
+
+          <!-- CARD 3 (APENAS CONTA ADMIN): CHAVE SECRETA & CONFIGURAÇÕES DO ESCRITÓRIO -->
+          <div id="admin-only-security-card" class="card" style="display: none;">
+            <span class="badge badge-danger" style="margin-bottom: 10px;">Exclusivo Administrador Master</span>
+            <h3 style="font-family: var(--font-serif); font-size: 1.75rem; margin-bottom: 6px;">🔑 Chave Secreta de Advogados & Dados Gerais</h3>
+            <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 18px;">
+              Apenas a conta <strong>Admin</strong> visualiza e altera a chave secreta exigida na aba <strong>"Sou Advogado"</strong> para liberar novos cadastros.
             </p>
 
             <form id="admin-security-form">

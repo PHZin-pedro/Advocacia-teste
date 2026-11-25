@@ -10,15 +10,6 @@ function switchAuthTab(tabName) {
   document.getElementById("form-admin").style.display = tabName === "admin" ? "block" : "none";
 }
 
-window.quickDemoLogin = async function (role) {
-  const users = await AureumStore.getUsers();
-  const user = users.find((u) => u.role === role);
-  if (user) {
-    AureumStore.setSession(user);
-    window.location.href = role === "admin" ? "/admin.html" : "/cliente.html";
-  }
-};
-
 document.addEventListener("DOMContentLoaded", async () => {
   await AureumStore.init();
 
@@ -32,7 +23,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     btn.addEventListener("click", () => switchAuthTab(btn.getAttribute("data-auth-tab")));
   });
 
-  // Vincula validação em tempo real de CPF (11 dígitos) e OAB
   AureumValidators.bindCPFInput(
     document.getElementById("reg-cpf"),
     document.getElementById("reg-cpf-hint")
@@ -45,21 +35,24 @@ document.addEventListener("DOMContentLoaded", async () => {
   const regPhone = document.getElementById("reg-phone");
   if (regPhone) regPhone.addEventListener("input", () => { regPhone.value = AureumValidators.maskPhone(regPhone.value); });
 
-  // Login
+  // Login (Admin, Advogado ou Cliente)
   document.getElementById("form-login").addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("login-email").value.trim().toLowerCase();
     const pass = document.getElementById("login-password").value;
 
     const users = await AureumStore.getUsers();
-    const found = users.find((u) => u.email.toLowerCase() === email && (!u.password || u.password === pass));
+    const found = users.find((u) => {
+      const storedPass = u.password || u.password_hash || "";
+      return u.email.toLowerCase() === email && storedPass === pass;
+    });
 
     if (!found) {
       AureumStore.toast("❌ E-mail ou senha inválidos.");
       return;
     }
     AureumStore.setSession(found);
-    window.location.href = found.role === "admin" ? "/admin.html" : "/cliente.html";
+    window.location.href = (found.role === "admin" || found.role === "lawyer") ? "/admin.html" : "/cliente.html";
   });
 
   // Cadastro Cliente com Verificação de CPF 11 dígitos + OTP
@@ -69,6 +62,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!cpfRes.valid) {
       AureumStore.toast(`❌ ${cpfRes.message}`);
       document.getElementById("reg-cpf").focus();
+      return;
+    }
+
+    const emailVal = document.getElementById("reg-email").value.trim().toLowerCase();
+    const existingUsers = await AureumStore.getUsers();
+    if (existingUsers.some((u) => u.email.toLowerCase() === emailVal)) {
+      AureumStore.toast("⚠️ Este e-mail já está cadastrado. Faça login.");
       return;
     }
 
@@ -92,10 +92,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const newUser = {
       id: "client-" + Date.now(),
       name: document.getElementById("reg-name").value.trim(),
-      email: document.getElementById("reg-email").value.trim(),
+      email: emailVal,
       phone: document.getElementById("reg-phone").value.trim(),
       cpf_cnpj: cpfRes.formatted,
       password: document.getElementById("reg-pass").value,
+      password_hash: document.getElementById("reg-pass").value,
       role: "client",
       verified: true
     };
@@ -105,7 +106,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "/cliente.html";
   });
 
-  // Cadastro Advogado com Validação OAB + Chave Secreta Dinâmica
+  // Cadastro Advogado (role: 'lawyer') com Validação OAB + Chave Secreta exclusiva do Admin
   document.getElementById("form-admin").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -122,27 +123,34 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    const emailVal = document.getElementById("adm-email").value.trim().toLowerCase();
     const existingUsers = await AureumStore.getUsers();
+    if (existingUsers.some((u) => u.email.toLowerCase() === emailVal)) {
+      AureumStore.toast("⚠️ Este e-mail já está cadastrado no sistema.");
+      return;
+    }
     if (existingUsers.some((u) => u.oab && u.oab.toUpperCase() === oabRes.normalized)) {
       AureumStore.toast("⚠️ Esta inscrição OAB já está cadastrada no sistema.");
       return;
     }
 
-    const adminUser = {
-      id: "admin-" + Date.now(),
+    const passVal = document.getElementById("adm-pass").value;
+    const lawyerUser = {
+      id: "lawyer-" + Date.now(),
       name: document.getElementById("adm-name").value.trim(),
       oab: oabRes.normalized,
       specialty: document.getElementById("adm-specialty").value.trim(),
       bio: "Advogado(a) associado(a) com atuação dedicada e atendimento digital personalizado.",
       avatar_url: "",
-      email: document.getElementById("adm-email").value.trim(),
-      password: document.getElementById("adm-pass").value,
-      role: "admin",
+      email: emailVal,
+      password: passVal,
+      password_hash: passVal,
+      role: "lawyer",
       verified: true
     };
 
-    await AureumStore.saveUser(adminUser);
-    AureumStore.setSession(adminUser);
+    await AureumStore.saveUser(lawyerUser);
+    AureumStore.setSession(lawyerUser);
     window.location.href = "/admin.html";
   });
 });

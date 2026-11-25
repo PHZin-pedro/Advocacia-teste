@@ -52,16 +52,6 @@
           <input type="password" id="login-password" class="form-control" placeholder="••••••••" required />
         </div>
         <button type="submit" class="btn btn-gold" style="width: 100%;">Entrar no Portal</button>
-
-        <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-subtle);">
-          <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 600;">
-            Acesso Rápido Demonstrativo:
-          </div>
-          <div class="grid-2" style="gap: 8px;">
-            <button type="button" class="btn btn-outline btn-sm" onclick="quickDemoLogin('admin')">⚖️ Painel Advogado</button>
-            <button type="button" class="btn btn-outline btn-sm" onclick="quickDemoLogin('client')">👤 Portal Cliente</button>
-          </div>
-        </div>
       </form>
 
       <!-- CADASTRO CLIENTE COM VALIDAÇÃO RIGOROSA DE CPF (11 DÍGITOS) + OTP -->
@@ -113,7 +103,7 @@
       <form id="form-admin" class="auth-panel" style="display: none;">
         <h2 style="font-family: var(--font-serif); font-size: 1.85rem; margin-bottom: 6px;">Cadastro de Advogado</h2>
         <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 18px;">
-          Validação obrigatória da inscrição OAB/UF e da Chave Secreta definida pelo escritório.
+          Validação obrigatória da inscrição OAB/UF e da Chave Secreta definida pelo administrador do escritório.
         </p>
 
         <div class="form-group">

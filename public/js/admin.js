@@ -4,6 +4,10 @@ let showArchivedCases = false;
 let calendarCursor = new Date();
 let selectedCalDate = new Date().toISOString().split("T")[0];
 
+function isMasterAdmin() {
+  return Boolean(currentAdmin && currentAdmin.role === "admin");
+}
+
 function switchAdminTab(tab) {
   document.querySelectorAll(".sidebar-btn").forEach((b) => {
     b.classList.toggle("active", b.getAttribute("data-tab") === tab);
@@ -33,7 +37,7 @@ async function updateAdminKpis() {
 }
 
 // ============================================================================
-// 1. CHAT ESTILO WHATSAPP
+// 1. CHAT ESTILO WHATSAPP (CONVERSAS MAIS RECENTES SEMPRE NO TOPO)
 // ============================================================================
 async function renderAdminChatContacts() {
   const msgs = await AureumStore.getMessages();
@@ -46,23 +50,37 @@ async function renderAdminChatContacts() {
 
   const threadsMap = new Map();
   filteredMsgs.forEach((m) => {
+    const msgTime = m.created_at ? new Date(m.created_at).getTime() : 0;
     const existing = threadsMap.get(m.client_id) || {
       client_id: m.client_id,
       client_name: m.client_name,
       client_email: m.client_email,
       lawyer_name: m.lawyer_name || "",
       lastMessage: m.text,
+      lastTimestamp: 0,
+      lastTimeFormatted: "",
       unread: 0
     };
-    existing.lastMessage = m.attachment_name ? `📄 ${m.attachment_name}` : m.text;
-    if (m.lawyer_name) existing.lawyer_name = m.lawyer_name;
+
+    if (msgTime >= existing.lastTimestamp) {
+      existing.lastTimestamp = msgTime;
+      existing.lastMessage = m.attachment_name ? `📄 ${m.attachment_name}` : m.text;
+      existing.lastTimeFormatted = msgTime
+        ? new Date(msgTime).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+        : "";
+      if (m.lawyer_name) existing.lawyer_name = m.lawyer_name;
+    }
+
     if (m.sender_role === "client" && !m.read_by_admin) existing.unread += 1;
     threadsMap.set(m.client_id, existing);
   });
 
-  const threads = Array.from(threadsMap.values()).filter(
-    (t) => t.client_name.toLowerCase().includes(search) || t.client_email.toLowerCase().includes(search)
-  );
+  // Ordena do chat MAIS RECENTE para o mais antigo (topo = última mensagem recebida/enviada)
+  const threads = Array.from(threadsMap.values())
+    .sort((a, b) => b.lastTimestamp - a.lastTimestamp)
+    .filter(
+      (t) => t.client_name.toLowerCase().includes(search) || t.client_email.toLowerCase().includes(search)
+    );
 
   if (!selectedClientId && threads.length > 0) selectedClientId = threads[0].client_id;
 
@@ -75,9 +93,12 @@ async function renderAdminChatContacts() {
   listEl.innerHTML = threads
     .map((t) => `
       <div class="chat-contact-item ${t.client_id === selectedClientId ? "active" : ""}" onclick="selectChatThread('${t.client_id}')">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
           <strong style="font-size:0.9rem;">${t.client_name}</strong>
-          ${t.unread > 0 ? `<span class="badge badge-gold">${t.unread}</span>` : ""}
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:0.7rem; color:var(--text-muted);">${t.lastTimeFormatted}</span>
+            ${t.unread > 0 ? `<span class="badge badge-gold">${t.unread}</span>` : ""}
+          </div>
         </div>
         <div style="font-size:0.74rem; color:var(--gold-500); font-weight:600;">${t.client_email}</div>
         <div style="font-size:0.78rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.lastMessage}</div>
@@ -87,7 +108,7 @@ async function renderAdminChatContacts() {
 
 window.selectChatThread = async function (clientId) {
   selectedClientId = clientId;
-  await AureumStore.markThreadRead(clientId, "admin");
+  await AureumStore.markThreadRead(clientId, currentAdmin.role);
   await renderAdminChatContacts();
   await renderAdminActiveMessages();
   await updateAdminKpis();
@@ -112,7 +133,7 @@ async function renderAdminActiveMessages() {
 
   box.innerHTML = threadMsgs
     .map((m) => {
-      const isOut = m.sender_role === "admin";
+      const isOut = m.sender_role === "admin" || m.sender_role === "lawyer";
       const time = new Date(m.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
       const attachmentHtml = m.attachment_name
         ? `<div class="msg-attachment">
@@ -314,7 +335,74 @@ window.removeReview = async function (revId) {
 };
 
 // ============================================================================
-// 4. PERFIL DO ADVOGADO (FOTO, NOME, OAB, DESCRIÇÃO) & CHAVE SECRETA
+// 4. EXCLUSIVO CONTA ADMIN: GERENCIAR ADVOGADOS (EDITAR SENHA E DEMITIR/EXCLUIR)
+// ============================================================================
+async function renderAdminLawyersManagement() {
+  if (!isMasterAdmin()) return;
+  const users = await AureumStore.getUsers();
+  const lawyers = users.filter((u) => u.role === "lawyer");
+  const container = document.getElementById("admin-lawyers-management-list");
+  if (!container) return;
+
+  if (lawyers.length === 0) {
+    container.innerHTML = `<p style="color:var(--text-muted); font-size:0.88rem;">Nenhum advogado associado cadastrado no momento.</p>`;
+    return;
+  }
+
+  container.innerHTML = lawyers
+    .map((l) => `
+      <div style="padding:14px 16px; border-radius:12px; border:1px solid var(--border-subtle); background:var(--bg-primary); display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px;">
+        <div>
+          <strong style="font-size:0.96rem; display:block;">${l.name}</strong>
+          <div style="font-size:0.8rem; color:var(--gold-500); font-weight:700;">${l.oab || "OAB"} • ${l.specialty || "Advogado"}</div>
+          <div style="font-size:0.78rem; color:var(--text-secondary);">📧 ${l.email} • Senha atual: <code>${l.password || l.password_hash || "***"}</code></div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="editLawyerPasswordPrompt('${l.id}', '${l.name.replace(/'/g, "\'")}')">
+            🔑 Editar Senha
+          </button>
+          <button type="button" class="btn btn-danger btn-sm" onclick="fireLawyerAccount('${l.id}', '${l.name.replace(/'/g, "\'")}')">
+            🗑️ Excluir Conta (Demitir)
+          </button>
+        </div>
+      </div>`)
+    .join("");
+}
+
+window.editLawyerPasswordPrompt = async function (lawyerId, lawyerName) {
+  if (!isMasterAdmin()) {
+    AureumStore.toast("❌ Acesso negado: apenas o Admin pode alterar senhas.");
+    return;
+  }
+  const newPass = prompt(`Digite a nova senha para ${lawyerName}:`);
+  if (!newPass || newPass.trim().length < 3) {
+    if (newPass !== null) AureumStore.toast("⚠️ A senha deve ter pelo menos 3 caracteres.");
+    return;
+  }
+  await AureumStore.adminUpdateLawyerPassword(currentAdmin.id, lawyerId, newPass.trim());
+  await renderAdminLawyersManagement();
+  AureumStore.toast(`🔑 Senha de ${lawyerName} atualizada com sucesso!`);
+};
+
+window.fireLawyerAccount = async function (lawyerId, lawyerName) {
+  if (!isMasterAdmin()) {
+    AureumStore.toast("❌ Acesso negado: apenas o Admin pode excluir contas.");
+    return;
+  }
+  const ok = confirm(
+    `Tem certeza que deseja excluir permanentemente a conta de ${lawyerName}?
+
+O advogado perderá o acesso imediatamente e será removido da equipe na tela inicial.`
+  );
+  if (!ok) return;
+
+  await AureumStore.adminDeleteLawyerAccount(currentAdmin.id, lawyerId);
+  await renderAdminLawyersManagement();
+  AureumStore.toast(`🗑️ Conta de ${lawyerName} excluída com sucesso.`);
+};
+
+// ============================================================================
+// 5. PERFIL DO ADVOGADO (FOTO, NOME, OAB, DESCRIÇÃO)
 // ============================================================================
 function renderProfileAvatarPreview(avatarUrl, name) {
   const wrap = document.getElementById("profile-avatar-preview-wrap");
@@ -329,13 +417,40 @@ function renderProfileAvatarPreview(avatarUrl, name) {
 document.addEventListener("DOMContentLoaded", async () => {
   await AureumStore.init();
   currentAdmin = AureumStore.getSession();
-  if (!currentAdmin || currentAdmin.role !== "admin") {
+  if (!currentAdmin || (currentAdmin.role !== "admin" && currentAdmin.role !== "lawyer")) {
     window.location.href = "/login.html";
     return;
   }
 
   document.getElementById("admin-sidebar-name").textContent = currentAdmin.name;
   document.getElementById("admin-sidebar-oab").textContent = currentAdmin.oab || window.AUREUM_CONFIG.lawyerOab;
+
+  const roleBadge = document.getElementById("admin-role-badge");
+  const sidebarPerfilBtn = document.getElementById("sidebar-btn-perfil");
+  const workspaceTitle = document.getElementById("workspace-main-title");
+  const sidebarSubtitle = document.getElementById("sidebar-panel-subtitle");
+
+  // Controle rigoroso de permissões: APENAS role === 'admin' vê Chave Secreta e Gestão de Advogados
+  if (isMasterAdmin()) {
+    roleBadge.textContent = "ADMIN MASTER";
+    roleBadge.className = "badge badge-gold";
+    sidebarPerfilBtn.textContent = "👤 Perfil, Chave & Equipe";
+    workspaceTitle.textContent = "Central do Administrador";
+    sidebarSubtitle.textContent = "Painel Administrativo";
+    document.getElementById("admin-only-lawyers-card").style.display = "block";
+    document.getElementById("admin-only-security-card").style.display = "block";
+  } else {
+    roleBadge.textContent = "ADVOGADO";
+    roleBadge.className = "badge badge-info";
+    sidebarPerfilBtn.textContent = "👤 Meu Perfil";
+    workspaceTitle.textContent = "Central do Advogado";
+    sidebarSubtitle.textContent = "Painel do Advogado";
+    // Garante que advogado comum não tenha acesso à chave nem à gestão de equipe
+    const secCard = document.getElementById("admin-only-security-card");
+    const lawCard = document.getElementById("admin-only-lawyers-card");
+    if (secCard) secCard.remove();
+    if (lawCard) lawCard.remove();
+  }
 
   if (AureumStore.isSupabaseReady()) {
     const badge = document.getElementById("db-connection-badge");
@@ -380,7 +495,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         client_email: ref ? ref.client_email : "",
         lawyer_id: currentAdmin.id,
         lawyer_name: currentAdmin.name,
-        sender_role: "admin",
+        sender_role: currentAdmin.role,
         sender_name: currentAdmin.name,
         text
       },
@@ -490,7 +605,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await renderAdminCases();
   });
 
-  // Perfil do Advogado (Foto, Nome, OAB, Descrição -> Tela Inicial)
+  // Perfil do Advogado/Admin (Foto, Nome, OAB, Descrição -> Tela Inicial)
   AureumValidators.bindOABInput(document.getElementById("prof-oab"), document.getElementById("prof-oab-hint"));
   document.getElementById("prof-name").value = currentAdmin.name || "";
   document.getElementById("prof-oab").value = currentAdmin.oab || "";
@@ -536,32 +651,37 @@ document.addEventListener("DOMContentLoaded", async () => {
     AureumStore.toast("✅ Seu perfil foi atualizado e já está visível na tela inicial!");
   });
 
-  // Alterar Chave Secreta Admin & Dados Gerais
-  document.getElementById("sec-invite-code").value = window.AUREUM_CONFIG.adminInviteCode;
-  document.getElementById("sec-firm-name").value = window.AUREUM_CONFIG.firmName;
-  document.getElementById("sec-short-name").value = window.AUREUM_CONFIG.firmShortName;
-  document.getElementById("sec-email").value = window.AUREUM_CONFIG.lawyerEmail;
-  document.getElementById("sec-phone").value = window.AUREUM_CONFIG.lawyerPhone;
-  document.getElementById("sec-address").value = window.AUREUM_CONFIG.firmAddress;
+  // Inicializa seção exclusiva da conta Admin (Chave Secreta + Gestão de Advogados)
+  if (isMasterAdmin()) {
+    document.getElementById("sec-invite-code").value = window.AUREUM_CONFIG.adminInviteCode;
+    document.getElementById("sec-firm-name").value = window.AUREUM_CONFIG.firmName;
+    document.getElementById("sec-short-name").value = window.AUREUM_CONFIG.firmShortName;
+    document.getElementById("sec-email").value = window.AUREUM_CONFIG.lawyerEmail;
+    document.getElementById("sec-phone").value = window.AUREUM_CONFIG.lawyerPhone;
+    document.getElementById("sec-address").value = window.AUREUM_CONFIG.firmAddress;
 
-  document.getElementById("admin-security-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const newCode = document.getElementById("sec-invite-code").value.trim();
-    if (newCode.length < 4) {
-      AureumStore.toast("⚠️ A chave secreta deve ter pelo menos 4 caracteres.");
-      return;
-    }
-    await AureumStore.saveOfficeSettings({
-      adminInviteCode: newCode,
-      firmName: document.getElementById("sec-firm-name").value.trim(),
-      firmShortName: document.getElementById("sec-short-name").value.trim(),
-      lawyerEmail: document.getElementById("sec-email").value.trim(),
-      lawyerPhone: document.getElementById("sec-phone").value.trim(),
-      firmAddress: document.getElementById("sec-address").value.trim()
+    document.getElementById("admin-security-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!isMasterAdmin()) return;
+      const newCode = document.getElementById("sec-invite-code").value.trim();
+      if (newCode.length < 4) {
+        AureumStore.toast("⚠️ A chave secreta deve ter pelo menos 4 caracteres.");
+        return;
+      }
+      await AureumStore.saveOfficeSettings({
+        adminInviteCode: newCode,
+        firmName: document.getElementById("sec-firm-name").value.trim(),
+        firmShortName: document.getElementById("sec-short-name").value.trim(),
+        lawyerEmail: document.getElementById("sec-email").value.trim(),
+        lawyerPhone: document.getElementById("sec-phone").value.trim(),
+        firmAddress: document.getElementById("sec-address").value.trim()
+      });
+      await window.loadRuntimeConfig();
+      AureumStore.toast("🔐 Chave secreta e dados do escritório atualizados!");
     });
-    await window.loadRuntimeConfig();
-    AureumStore.toast("🔐 Chave secreta e dados do escritório atualizados!");
-  });
+
+    await renderAdminLawyersManagement();
+  }
 
   await renderAdminChatContacts();
   await renderAdminActiveMessages();

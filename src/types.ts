@@ -1,9 +1,10 @@
-export type UserRole = 'admin' | 'client';
+export type UserRole = 'admin' | 'lawyer' | 'client';
 
 export interface Profile {
   id: string;
   name: string;
   email: string;
+  password_hash?: string;
   role: UserRole;
   cpf_cnpj?: string;
   phone?: string;

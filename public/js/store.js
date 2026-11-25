@@ -67,20 +67,22 @@ window.AureumStore = (function () {
           name: window.AUREUM_CONFIG.lawyerName || "Dr. Henrique Valença",
           email: "advogado@aureum.com.br",
           password: "123",
+          password_hash: "123",
           role: "admin",
           oab: window.AUREUM_CONFIG.lawyerOab || "OAB/SP 348.920",
           specialty: "Direito Empresarial & Contratos",
-          bio: "Sócio fundador com mais de 15 anos de atuação em contencioso estratégico, defesa corporativa e contratos de alta complexidade.",
+          bio: "Sócio fundador e Administrador Master com mais de 15 anos de atuação em contencioso estratégico, defesa corporativa e contratos de alta complexidade.",
           avatar_url: "",
           phone: "(11) 99842-7100",
           verified: true
         },
         {
-          id: "admin-2",
+          id: "lawyer-1",
           name: "Dra. Camila Monteiro",
           email: "camila@aureum.com.br",
           password: "123",
-          role: "admin",
+          password_hash: "123",
+          role: "lawyer",
           oab: "OAB/SP 412.780",
           specialty: "Direito Trabalhista & Família",
           bio: "Especialista em resolução de conflitos trabalhistas estratégicos, inventários extrajudiciais e planejamento sucessório familiar.",
@@ -93,6 +95,7 @@ window.AureumStore = (function () {
           name: "Mariana Costa Almeida",
           email: "mariana.costa@email.com",
           password: "123",
+          password_hash: "123",
           role: "client",
           cpf_cnpj: "384.910.228-40",
           phone: "(11) 98711-3340",
@@ -216,7 +219,7 @@ window.AureumStore = (function () {
           id: "rev-2",
           client_name: "Roberto Mendes Ferreira",
           client_email: "roberto.mendes@empresa.com.br",
-          lawyer_id: "admin-2",
+          lawyer_id: "lawyer-1",
           lawyer_name: "Dra. Camila Monteiro",
           area: "Direito Trabalhista",
           rating: 5,
@@ -229,9 +232,6 @@ window.AureumStore = (function () {
     }
   }
 
-  // ==========================================================================
-  // MODO ESCURO / CLARO EM TODAS AS ABAS E PÁGINAS
-  // ==========================================================================
   function initTheme() {
     const saved = localStorage.getItem(KEYS.THEME) || "light";
     document.documentElement.setAttribute("data-theme", saved);
@@ -281,15 +281,25 @@ window.AureumStore = (function () {
   }
 
   // ==========================================================================
-  // USUÁRIOS & ADVOGADOS (MULTI-ADVOGADOS)
+  // USUÁRIOS, ADVOGADOS & CONTROLE ADMINISTRATIVO (SENHA / DEMISSÃO)
   // ==========================================================================
   async function getUsers() {
     const sb = initSupabase();
     if (sb) {
       const { data } = await sb.from("profiles").select("*").order("created_at", { ascending: true });
       if (data && data.length > 0) {
-        writeJSON(KEYS.USERS, data);
-        return data;
+        const localUsers = readJSON(KEYS.USERS, []);
+        const normalized = data.map((u) => {
+          const localMatch = localUsers.find((l) => l.id === u.id || l.email.toLowerCase() === u.email.toLowerCase());
+          const effectivePass = u.password_hash || (localMatch ? (localMatch.password || localMatch.password_hash) : "");
+          return {
+            ...u,
+            password: effectivePass,
+            password_hash: effectivePass
+          };
+        });
+        writeJSON(KEYS.USERS, normalized);
+        return normalized;
       }
     }
     return readJSON(KEYS.USERS, []);
@@ -297,38 +307,109 @@ window.AureumStore = (function () {
 
   async function getLawyers() {
     const users = await getUsers();
-    return users.filter((u) => u.role === "admin");
+    return users.filter((u) => u.role === "admin" || u.role === "lawyer");
   }
 
   async function saveUser(user) {
     const users = readJSON(KEYS.USERS, []);
     const idx = users.findIndex((u) => u.id === user.id || u.email.toLowerCase() === user.email.toLowerCase());
-    if (idx >= 0) users[idx] = { ...users[idx], ...user };
-    else users.push(user);
+    const effectivePass = user.password || user.password_hash || (idx >= 0 ? (users[idx].password || users[idx].password_hash) : "123");
+    const enrichedUser = {
+      ...user,
+      password: effectivePass,
+      password_hash: effectivePass
+    };
+
+    if (idx >= 0) users[idx] = { ...users[idx], ...enrichedUser };
+    else users.push(enrichedUser);
     writeJSON(KEYS.USERS, users);
 
     const session = getSession();
-    if (session && (session.id === user.id || session.email === user.email)) {
-      setSession({ ...session, ...user });
+    if (session && (session.id === enrichedUser.id || session.email === enrichedUser.email)) {
+      setSession({ ...session, ...enrichedUser });
     }
 
     const sb = initSupabase();
     if (sb) {
       await sb.from("profiles").upsert({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        cpf_cnpj: user.cpf_cnpj || null,
-        phone: user.phone || null,
-        oab: user.oab || null,
-        specialty: user.specialty || null,
-        bio: user.bio || null,
-        avatar_url: user.avatar_url || null,
+        id: enrichedUser.id,
+        name: enrichedUser.name,
+        email: enrichedUser.email,
+        password_hash: effectivePass,
+        role: enrichedUser.role,
+        cpf_cnpj: enrichedUser.cpf_cnpj || null,
+        phone: enrichedUser.phone || null,
+        oab: enrichedUser.oab || null,
+        specialty: enrichedUser.specialty || null,
+        bio: enrichedUser.bio || null,
+        avatar_url: enrichedUser.avatar_url || null,
         verified: true
       }, { onConflict: "email" });
     }
-    return user;
+    return enrichedUser;
+  }
+
+  async function adminUpdateLawyerPassword(adminId, lawyerId, newPassword) {
+    const session = getSession();
+    if (!session || session.role !== "admin" || session.id !== adminId) {
+      throw new Error("Acesso negado: apenas a conta Admin pode editar senhas.");
+    }
+
+    const users = readJSON(KEYS.USERS, []);
+    const idx = users.findIndex((u) => u.id === lawyerId);
+    if (idx >= 0) {
+      users[idx].password = newPassword;
+      users[idx].password_hash = newPassword;
+      writeJSON(KEYS.USERS, users);
+    }
+
+    const sb = initSupabase();
+    if (sb) {
+      const { error: rpcErr } = await sb.rpc("admin_update_lawyer_password", {
+        p_admin_id: adminId,
+        p_target_user_id: lawyerId,
+        p_new_password: newPassword
+      });
+      if (rpcErr) {
+        await sb.from("profiles").update({ password_hash: newPassword }).eq("id", lawyerId);
+      }
+    }
+    return true;
+  }
+
+  async function adminDeleteLawyerAccount(adminId, lawyerId) {
+    const session = getSession();
+    if (!session || session.role !== "admin" || session.id !== adminId) {
+      throw new Error("Acesso negado: apenas a conta Admin pode excluir contas de advogados.");
+    }
+    if (adminId === lawyerId) {
+      throw new Error("A conta Admin principal não pode excluir a si mesma.");
+    }
+
+    const users = readJSON(KEYS.USERS, []).filter((u) => u.id !== lawyerId);
+    writeJSON(KEYS.USERS, users);
+
+    // Desvincula o advogado demitido sem apagar o histórico do cliente
+    const cases = readJSON(KEYS.CASES, []).map((c) => c.lawyer_id === lawyerId ? { ...c, lawyer_id: null } : c);
+    writeJSON(KEYS.CASES, cases);
+
+    const msgs = readJSON(KEYS.MESSAGES, []).map((m) => m.lawyer_id === lawyerId ? { ...m, lawyer_id: null } : m);
+    writeJSON(KEYS.MESSAGES, msgs);
+
+    const apts = readJSON(KEYS.APPOINTMENTS, []).map((a) => a.lawyer_id === lawyerId ? { ...a, lawyer_id: null } : a);
+    writeJSON(KEYS.APPOINTMENTS, apts);
+
+    const sb = initSupabase();
+    if (sb) {
+      const { error: rpcErr } = await sb.rpc("admin_delete_lawyer_account", {
+        p_admin_id: adminId,
+        p_target_user_id: lawyerId
+      });
+      if (rpcErr) {
+        await sb.from("profiles").delete().eq("id", lawyerId).eq("role", "lawyer");
+      }
+    }
+    return true;
   }
 
   async function uploadFileToStorage(file) {
@@ -407,7 +488,8 @@ window.AureumStore = (function () {
         return data;
       }
     }
-    return readJSON(KEYS.MESSAGES, []);
+    const local = readJSON(KEYS.MESSAGES, []);
+    return local.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
   }
 
   async function sendChatMessage(msgPayload, fileObj = null) {
@@ -431,7 +513,7 @@ window.AureumStore = (function () {
       attachment_size: fileObj ? (fileObj.size / (1024 * 1024)).toFixed(2) + " MB" : msgPayload.attachment_size || null,
       attachment_type: fileObj ? fileObj.type : msgPayload.attachment_type || null,
       attachment_url: attachmentUrl,
-      read_by_admin: msgPayload.sender_role === "admin",
+      read_by_admin: msgPayload.sender_role === "admin" || msgPayload.sender_role === "lawyer",
       read_by_client: msgPayload.sender_role === "client",
       created_at: new Date().toISOString()
     };
@@ -470,11 +552,22 @@ window.AureumStore = (function () {
     let changed = false;
     msgs.forEach((m) => {
       if (m.client_id === clientId) {
-        if (readerRole === "admin" && !m.read_by_admin) { m.read_by_admin = true; changed = true; }
-        if (readerRole === "client" && !m.read_by_client) { m.read_by_client = true; changed = true; }
+        if ((readerRole === "admin" || readerRole === "lawyer") && !m.read_by_admin) {
+          m.read_by_admin = true;
+          changed = true;
+        }
+        if (readerRole === "client" && !m.read_by_client) {
+          m.read_by_client = true;
+          changed = true;
+        }
       }
     });
     if (changed) writeJSON(KEYS.MESSAGES, msgs);
+
+    const sb = initSupabase();
+    if (sb && (readerRole === "admin" || readerRole === "lawyer")) {
+      await sb.from("chat_messages").update({ read_by_admin: true }).eq("client_id", clientId);
+    }
   }
 
   async function getDocuments() {
@@ -529,9 +622,6 @@ window.AureumStore = (function () {
     return aptObj;
   }
 
-  // ==========================================================================
-  // SISTEMA DE AVALIAÇÕES COMPLETO
-  // ==========================================================================
   async function getReviews() {
     const sb = initSupabase();
     if (sb) {
@@ -592,7 +682,29 @@ window.AureumStore = (function () {
     return hoursObj;
   }
 
+  async function syncOfficeSettingsFromSupabase() {
+    const sb = initSupabase();
+    if (!sb) return;
+    try {
+      const { data } = await sb.from("office_settings").select("*").eq("id", "default").single();
+      if (data) {
+        if (data.admin_invite_code) window.AUREUM_CONFIG.adminInviteCode = data.admin_invite_code;
+        if (data.firm_name) window.AUREUM_CONFIG.firmName = data.firm_name;
+        if (data.firm_short_name) window.AUREUM_CONFIG.firmShortName = data.firm_short_name;
+        if (data.lawyer_email) window.AUREUM_CONFIG.lawyerEmail = data.lawyer_email;
+        if (data.lawyer_phone) window.AUREUM_CONFIG.lawyerPhone = data.lawyer_phone;
+        if (data.firm_address) window.AUREUM_CONFIG.firmAddress = data.firm_address;
+        if (data.business_hours) writeJSON(KEYS.HOURS, data.business_hours);
+      }
+    } catch (_) {}
+  }
+
   async function saveOfficeSettings(overrides) {
+    const session = getSession();
+    if (!session || session.role !== "admin") {
+      throw new Error("Acesso negado: apenas a conta Admin pode alterar a chave secreta.");
+    }
+
     const current = JSON.parse(localStorage.getItem("aureum_brand_overrides") || "{}");
     const merged = { ...current, ...overrides };
     localStorage.setItem("aureum_brand_overrides", JSON.stringify(merged));
@@ -665,6 +777,7 @@ window.AureumStore = (function () {
       await window.loadRuntimeConfig();
       seedInitialData();
       initSupabase();
+      await syncOfficeSettingsFromSupabase();
       hideLoader();
     },
     isSupabaseReady,
@@ -676,6 +789,8 @@ window.AureumStore = (function () {
     getUsers,
     getLawyers,
     saveUser,
+    adminUpdateLawyerPassword,
+    adminDeleteLawyerAccount,
     uploadFileToStorage,
     getCases,
     saveCase,
